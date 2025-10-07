@@ -1,0 +1,23 @@
+{
+  "name": "vodka",
+  "version": "0.1.0",
+  "description": "The backend for Drinko!³",
+  "main": "indexnpm install express.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Lewis Milburn <lewis@pixelset.dev>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PixelsetDev/vodka.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PixelsetDev/vodka/issues"
+  },
+  "homepage": "https://github.com/PixelsetDev/vodka#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
