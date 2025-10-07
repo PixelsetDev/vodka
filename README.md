@@ -23,7 +23,18 @@ are free to modify, share, and reproduce the software as long as you abide by th
 ## Building and Deploying
 Drinko!³ composes of two parts - the client and server, which we call Gin and Vodka.
 You'll need to download and build both of them to get started.
-See the package.json file for build commands. 
+See the package.json file for build commands.
+
+### Authentication
+A LogTo instance is required for authentication. We may be able to provide access to our instance (Portal) if you need
+it, if so please email portaldev@pixelset.dev for assistance.
+
+Note: For LogTo to work correctly, you'll need to set TRUST_PROXY_HEADER to true in Node.JS
+
+### TLS/SSL
+By default, Vodka runs behind Caddy which provides TLS/SSL certificates.
+
+### Containerise
 
 ## Modifying Vodka
 You can modify Vodka as long as you follow the terms of the Apache 2.0 license.
