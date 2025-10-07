@@ -23,7 +23,7 @@ are free to modify, share, and reproduce the software as long as you abide by th
 ## Building and Deploying
 Drinko!³ composes of two parts - the client and server, which we call Gin and Vodka.
 You'll need to download and build both of them to get started.
-See the package.json file for build commands.
+See the package.json file for build commands. 
 
 ## Modifying Vodka
 You can modify Vodka as long as you follow the terms of the Apache 2.0 license.
