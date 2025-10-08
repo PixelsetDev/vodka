@@ -78,9 +78,9 @@ if (!process.env.TRUST_PROXY_HEADER) {
             }
         });
 
-        app.get('/logto/status', withLogto(config), (req, res) => {
-            res.setHeader('content-type', 'application/json');
-            handleAuthRoute(req, request, res);
+        app.get('/logto/status', withLogto(config), (request, response) => {
+            response.setHeader('content-type', 'application/json');
+            handleAuthRoute(request, response);
         });
     }
 }

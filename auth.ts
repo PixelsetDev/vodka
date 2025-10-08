@@ -7,8 +7,8 @@ export const config: LogtoExpressConfig = {
     baseUrl: process.env.APP_HTTP_PROTOCOL+'://'+process.env.APP_BASE
 };
 
-export function handleAuthRoute (req, request, res) {
-    if (req.user.isAuthenticated) {
+export function handleAuthRoute (request, res) {
+    if (request.user.isAuthenticated) {
         res.send({
             'authed': true,
             'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
