@@ -9,32 +9,16 @@ export const config: LogtoExpressConfig = {
 
 export function handleAuthRoute (req, request, res) {
     if (req.user.isAuthenticated) {
-        if (process.env.APP_PORT !== "443") {
-            res.send({
-                'authed': true,
-                'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + ':' + process.env.APP_PORT + '/logto/sign-in',
-                'profile': request.user.claims
-            });
-        } else {
-            res.send({
-                'authed': true,
-                'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
-                'profile': request.user.claims
-            });
-        }
+        res.send({
+            'authed': true,
+            'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
+            'profile': request.user.claims
+        });
     } else {
-        if (process.env.APP_PORT !== "443") {
-            res.send({
-                'authed': false,
-                'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + ':' + process.env.APP_PORT + '/logto/sign-in',
-                'profile': null
-            });
-        } else {
-            res.send({
-                'authed': false,
-                'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
-                'profile': null
-            });
-        }
+        res.send({
+            'authed': true,
+            'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
+            'profile': request.user.claims
+        });
     }
 }

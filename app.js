@@ -43,8 +43,25 @@ if (!process.env.TRUST_PROXY_HEADER) {
         });
 
         app.get("/", (req, res) => {
-            res.setHeader('content-type', 'text/html; charset=utf-8');
-            res.send("D_VODKA_API");
+            res.setHeader('content-type', 'application/json');
+            if (process.env.DEBUG) {
+                res.send({
+                    'app': 'D_VODKA_API', 'config': {
+                        'APP_PORT': process.env.APP_PORT,
+                        'APP_BASE': process.env.APP_BASE,
+                        'APP_SECRET': process.env.APP_SECRET,
+                        'APP_HTTP_PROTOCOL': process.env.APP_HTTP_PROTOCOL,
+                        'APP_DEBUG': process.env.APP_DEBUG,
+                        'OIDC_BASE': process.env.OIDC_BASE,
+                        'OIDC_CLIENT_ID': process.env.OIDC_CLIENT_ID,
+                        'OIDC_SECRET': '[REDACTED]',
+                    }
+                });
+            } else {
+                res.send({
+                    'app': 'D_VODKA_API'
+                });
+            }
         });
 
         app.get('/logto/status', withLogto(config), (req, res) => {
