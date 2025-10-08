@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import {handleAuthRoutes, withLogto} from '@logto/express';
 import { config, handleAuthRoute } from './auth.ts';
-let oidcConnected = false;
+let oidcConnected;
 
 console.log("VODKA > Loading...");
 
@@ -25,7 +25,7 @@ app.use(express.json());
 console.log("VODKA > Loaded.");
 console.log("VODKA > Connecting to LogTo (OIDC) Server...");
 try {
-    const res = await fetch("https://auth.portalsso.com/oidc/.well-known/openid-configuration");
+    await fetch("https://auth.portalsso.com/oidc/.well-known/openid-configuration");
     console.log("VODKA > Connected.");
     oidcConnected = true;
 } catch (err) {
@@ -43,10 +43,12 @@ if (!process.env.TRUST_PROXY_HEADER) {
         });
 
         app.get("/", (req, res) => {
+            res.setHeader('content-type', 'text/html; charset=utf-8');
             response.send("D_VODKA_API");
         });
 
         app.get('/logto/status', withLogto(config), (req, res) => {
+            res.setHeader('content-type', 'application/json');
             handleAuthRoute(req, request, res);
         });
     }

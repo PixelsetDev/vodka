@@ -8,7 +8,6 @@ export const config: LogtoExpressConfig = {
 };
 
 export function handleAuthRoute (req, request, res) {
-    res.setHeader('content-type', 'application/json');
     if (req.user.isAuthenticated) {
         if (process.env.APP_PORT !== "443") {
             res.send({
