@@ -34,7 +34,9 @@ Note: For LogTo to work correctly, you'll need to set TRUST_PROXY_HEADER to true
 ### TLS/SSL
 By default, Vodka runs behind Caddy which provides TLS/SSL certificates.
 
-### Containerise
+### Content
+Game-content is stored in a MYSQL Database. Our paid packs are not open-source, but our free ones are. Plus, you can add
+your own! For help, please see [the database guide](DATABASE.md).
 
 ## Modifying Vodka
 You can modify Vodka as long as you follow the terms of the Apache 2.0 license.
