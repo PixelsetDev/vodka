@@ -27,7 +27,7 @@ console.log({
     'app': 'D_VODKA_API', 'config': {
         'APP_PORT': process.env.APP_PORT,
         'APP_BASE': process.env.APP_BASE,
-        'APP_SECRET': process.env.APP_SECRET,
+        'APP_SECRET': '[REDACTED]',
         'APP_HTTP_PROTOCOL': process.env.APP_HTTP_PROTOCOL,
         'APP_DEBUG': process.env.APP_DEBUG,
         'OIDC_BASE': process.env.OIDC_BASE,
@@ -63,7 +63,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
                     'app': 'D_VODKA_API', 'config': {
                         'APP_PORT': process.env.APP_PORT,
                         'APP_BASE': process.env.APP_BASE,
-                        'APP_SECRET': process.env.APP_SECRET,
+                        'APP_SECRET': '[REDACTED]',
                         'APP_HTTP_PROTOCOL': process.env.APP_HTTP_PROTOCOL,
                         'APP_DEBUG': process.env.APP_DEBUG,
                         'OIDC_BASE': process.env.OIDC_BASE,
