@@ -44,7 +44,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
 
         app.get("/", (req, res) => {
             res.setHeader('content-type', 'application/json');
-            if (process.env.DEBUG) {
+            if (process.env.APP_DEBUG) {
                 res.send({
                     'app': 'D_VODKA_API', 'config': {
                         'APP_PORT': process.env.APP_PORT,
