@@ -44,7 +44,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
 
         app.get("/", (req, res) => {
             res.setHeader('content-type', 'text/html; charset=utf-8');
-            response.send("D_VODKA_API");
+            res.send("D_VODKA_API");
         });
 
         app.get('/logto/status', withLogto(config), (req, res) => {
