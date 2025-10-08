@@ -22,6 +22,20 @@ app.use(
 app.use(handleAuthRoutes(config));
 app.use(express.json());
 
+console.log("VODKA > Loaded config.");
+console.log({
+    'app': 'D_VODKA_API', 'config': {
+        'APP_PORT': process.env.APP_PORT,
+        'APP_BASE': process.env.APP_BASE,
+        'APP_SECRET': process.env.APP_SECRET,
+        'APP_HTTP_PROTOCOL': process.env.APP_HTTP_PROTOCOL,
+        'APP_DEBUG': process.env.APP_DEBUG,
+        'OIDC_BASE': process.env.OIDC_BASE,
+        'OIDC_CLIENT_ID': process.env.OIDC_CLIENT_ID,
+        'OIDC_SECRET': '[REDACTED]',
+    }
+});
+
 console.log("VODKA > Loaded.");
 console.log("VODKA > Connecting to LogTo (OIDC) Server...");
 try {
