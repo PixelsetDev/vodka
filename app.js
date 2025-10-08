@@ -2,8 +2,10 @@ import dotenv from 'dotenv';
 import express, {response} from 'express';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
-import {handleAuthRoutes, withLogto} from '@logto/express';
-import { config, handleAuthRoute } from './auth.ts';
+import { handleAuthRoutes } from '@logto/express';
+import { config } from './auth.js';
+import { loadRoutes } from './routes.js';
+import mysql from 'mysql2/promise';
 let oidcConnected;
 
 console.log("VODKA > Loading...");
@@ -33,6 +35,9 @@ console.log({
         'OIDC_BASE': process.env.OIDC_BASE,
         'OIDC_CLIENT_ID': process.env.OIDC_CLIENT_ID,
         'OIDC_SECRET': '[REDACTED]',
+        'MYSQL_HOST': process.env.MYSQL_HOST,
+        'MYSQL_USER': process.env.MYSQL_USER,
+        'MYSQL_PASSWORD': '[REDACTED]',
     }
 });
 
@@ -44,6 +49,7 @@ try {
     oidcConnected = true;
 } catch (err) {
     console.error("VODKA > Failed to connect to LogTo (OIDC).");
+    console.error(err);
     oidcConnected = false;
 }
 
@@ -51,36 +57,25 @@ if (!process.env.TRUST_PROXY_HEADER) {
     console.error("VODKA > Proxy header untrusted.");
 } else {
     if (oidcConnected) {
-        app.listen(process.env.APP_PORT, () => {
-            console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
-            console.log("VODKA > Ready for connections.");
+        console.log("VODKA > Connecting to MYSQL...");
+        let con = mysql.createConnection({
+            host: process.env.MYSQL_HOST,
+            user: process.env.MYSQL_USER,
+            password: process.env.MYSQL_PASSWORD,
         });
 
-        app.get("/", (req, res) => {
-            res.setHeader('content-type', 'application/json');
-            if (process.env.APP_DEBUG === true || process.env.APP_DEBUG === "true") {
-                res.send({
-                    'app': 'D_VODKA_API', 'config': {
-                        'APP_PORT': process.env.APP_PORT,
-                        'APP_BASE': process.env.APP_BASE,
-                        'APP_SECRET': '[REDACTED]',
-                        'APP_HTTP_PROTOCOL': process.env.APP_HTTP_PROTOCOL,
-                        'APP_DEBUG': process.env.APP_DEBUG,
-                        'OIDC_BASE': process.env.OIDC_BASE,
-                        'OIDC_CLIENT_ID': process.env.OIDC_CLIENT_ID,
-                        'OIDC_SECRET': '[REDACTED]',
-                    }
-                });
+        con.connect(function(err) {
+            if (err) {
+                console.error("VODKA > Unable to connect to MYSQL.");
+                console.error(err);
             } else {
-                res.send({
-                    'app': 'D_VODKA_API'
+                console.log("VODKA > Connected to MYSQL.");
+                app.listen(process.env.APP_PORT, () => {
+                    console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
+                    console.log("VODKA > Ready for connections.");
+                    loadRoutes(app);
                 });
             }
-        });
-
-        app.get('/logto/status', withLogto(config), (request, response) => {
-            response.setHeader('content-type', 'application/json');
-            handleAuthRoute(request, response);
         });
     }
 }
