@@ -3,7 +3,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { handleAuthRoutes } from '@logto/express';
-import { config } from './routes/auth.js';
+import { config } from './auth.js';
 import { loadRoutes } from './routes/routes.js';
 import mysql from 'mysql2/promise';
 let oidcConnected;

@@ -1,5 +1,5 @@
 import {withLogto} from "@logto/express";
-import {config, handleAuthRoute} from "./auth.js";
+import {config} from "../auth.js";
 
 export function loadRoutes (app, db) {
     app.get("/", (request, response) => {
@@ -26,7 +26,19 @@ export function loadRoutes (app, db) {
 
     app.get('/logto/status', withLogto(config), (request, response) => {
         response.setHeader('content-type', 'application/json');
-        handleAuthRoute(request, response);
+        if (request.user.isAuthenticated) {
+            res.send({
+                'authed': true,
+                'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
+                'profile': request.user.claims
+            });
+        } else {
+            res.send({
+                'authed': true,
+                'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
+                'profile': request.user.claims
+            });
+        }
     });
 
     app.get('/packs/list', withLogto(config), async (request, response) => {
