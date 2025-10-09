@@ -29,22 +29,22 @@ export function loadRoutes (app, db) {
         handleAuthRoute(request, response);
     });
 
-    app.get('/packs/list', withLogto(config), (request, response) => {
+    app.get('/packs/list', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
         if (request.user.isAuthenticated) {
-            db.query("SELECT * FROM packs", function (err, result, fields) {
-                if (err) {
-                    response.send({
-                        "code": 500,
-                        "data": err.message,
-                    })
-                } else {
-                    response.send({
-                        "code": 200,
-                        "data": result,
-                    })
-                }
-            });
+            try {
+                const [rows] = await db.query("SELECT * FROM packs");
+                response.send({
+                    code: 200,
+                    data: rows,
+                });
+            } catch (err) {
+                response.send({
+                    code: 500,
+                    data: err.message,
+                });
+            }
+
         } else {
             response.send({
                 "code": 403,
