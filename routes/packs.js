@@ -32,10 +32,11 @@ export function routePacks (app, db) {
 
         if (request.user.isAuthenticated) {
             try {
-                const uuid = urlParams.get('uuid');
+                const uuid = request.user.claims.sub;
                 const pack = urlParams.get('pack');
 
-                const [rows] = await db.query("SELECT * FROM purchases WHERE uuid = '"+uuid+"' AND pack = '"+pack+"'");
+                const [rows] = await db.execute('SELECT * FROM purchases WHERE uuid = ? AND pack = ?', [uuid,pack], callback);
+
                 console.log(rows);
 
                 response.send({
