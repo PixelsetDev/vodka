@@ -28,7 +28,7 @@ export function loadRoutes (app, db) {
         }
     });
 
-    app.get('/auth-status', withLogto(config), (request, response) => {
+    app.get('/account', withLogto(config), (request, response) => {
         response.setHeader('content-type', 'application/json');
         if (request.user.isAuthenticated) {
             res.send({
