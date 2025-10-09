@@ -33,7 +33,7 @@ export function loadRoutes (app, db) {
         response.setHeader('content-type', 'application/json');
         if (request.user.isAuthenticated) {
             try {
-                const [rows] = await db.query("SELECT * FROM packs");
+                const [rows] = await db.query("SELECT `name`, `description`, `status`, `price` FROM packs");
                 response.send({
                     code: 200,
                     data: rows,
