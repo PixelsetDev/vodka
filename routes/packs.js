@@ -34,11 +34,17 @@ export function routePacks (app, db) {
                 const [rows] = await db.execute('SELECT * FROM purchases WHERE uuid = ? AND pack = ?', [request.user.claims.sub, request.query.pack]);
 
                 console.log(rows);
-
-                response.send({
-                    code: 200,
-                    data: rows,
-                });
+                if (rows.length === 0) {
+                    response.send({
+                        code: 200,
+                        data: { "owns": false },
+                    });
+                } else {
+                    response.send({
+                        code: 200,
+                        data: { "owns": true },
+                    });
+                }
             } catch (err) {
                 response.send({
                     code: 500,
