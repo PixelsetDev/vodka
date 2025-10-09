@@ -62,26 +62,26 @@ if (!process.env.TRUST_PROXY_HEADER) {
 } else {
     if (oidcConnected) {
         console.log("VODKA > Connecting to MYSQL...");
-        const db = await mysql.createConnection({
-            host: process.env.SQL_HOST,
-            user: process.env.SQL_USER,
-            password: process.env.SQL_PASSWORD,
-            database: process.env.SQL_DATABASE,
-            connectTimeout: 10000
-        });
+        try {
+            const db = await mysql.createConnection({
+                host: process.env.SQL_HOST,
+                user: process.env.SQL_USER,
+                password: process.env.SQL_PASSWORD?.trim(),
+                database: process.env.SQL_DATABASE,
+                connectTimeout: 10000
+            });
 
-        await db.connect(function(err) {
-            if (err) {
-                console.error("VODKA > Unable to connect to MYSQL.");
-                console.error(err);
-            } else {
-                console.log("VODKA > Connected to MYSQL.");
-                app.listen(process.env.APP_PORT, () => {
-                    console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
-                    console.log("VODKA > Ready for connections.");
-                    loadRoutes(app, db);
-                });
-            }
-        });
+            console.log("VODKA > Connected to MYSQL.");
+
+            app.listen(process.env.APP_PORT, () => {
+                console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
+                console.log("VODKA > Ready for connections.");
+                loadRoutes(app, db);
+            });
+
+        } catch (err) {
+            console.error("VODKA > Unable to connect to MYSQL.");
+            console.error(err);
+        }
     }
 }
