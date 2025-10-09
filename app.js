@@ -34,12 +34,13 @@ if (process.env.APP_DEBUG === "true") {
             'APP_SECRET': '[REDACTED]',
             'APP_HTTP_PROTOCOL': process.env.APP_HTTP_PROTOCOL,
             'APP_DEBUG': process.env.APP_DEBUG,
+            'SQL_HOST': process.env.SQL_HOST,
+            'SQL_USER': process.env.SQL_USER,
+            'SQL_PASSWORD': '[REDACTED]',
+            'SQL_DATABASE': process.env.SQL_DATABASE,
             'OIDC_BASE': process.env.OIDC_BASE,
             'OIDC_CLIENT_ID': process.env.OIDC_CLIENT_ID,
             'OIDC_SECRET': '[REDACTED]',
-            'MYSQL_HOST': process.env.MYSQL_HOST,
-            'MYSQL_USER': process.env.MYSQL_USER,
-            'MYSQL_PASSWORD': '[REDACTED]',
         }
     });
 }
@@ -61,7 +62,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
 } else {
     if (oidcConnected) {
         console.log("VODKA > Connecting to MYSQL...");
-        let db = mysql.createConnection({
+        const db = await mysql.createConnection({
             host: process.env.SQL_HOST,
             user: process.env.SQL_USER,
             password: process.env.SQL_PASSWORD,
