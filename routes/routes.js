@@ -1,7 +1,7 @@
 import {withLogto} from "@logto/express";
 import {config, handleAuthRoute} from "./auth.js";
 
-export function loadRoutes (app) {
+export function loadRoutes (app, sql) {
     app.get("/", (request, response) => {
         response.setHeader('content-type', 'application/json');
         if (process.env.APP_DEBUG === "true") {
@@ -27,5 +27,29 @@ export function loadRoutes (app) {
     app.get('/logto/status', withLogto(config), (request, response) => {
         response.setHeader('content-type', 'application/json');
         handleAuthRoute(request, response);
+    });
+
+    app.get('/packs/list', withLogto(config), (request, response) => {
+        response.setHeader('content-type', 'application/json');
+        if (request.user.isAuthenticated) {
+            sql.query("SELECT * FROM packs", function (err, result, fields) {
+                if (err) {
+                    response.send({
+                        "code": 500,
+                        "data": err.message,
+                    })
+                } else {
+                    response.send({
+                        "code": 200,
+                        "data": result,
+                    })
+                }
+            });
+        } else {
+            response.send({
+                "code": 403,
+                "data": null,
+            })
+        }
     });
 }
