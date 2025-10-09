@@ -61,13 +61,14 @@ if (!process.env.TRUST_PROXY_HEADER) {
 } else {
     if (oidcConnected) {
         console.log("VODKA > Connecting to MYSQL...");
-        let sql = mysql.createConnection({
-            host: process.env.MYSQL_HOST,
-            user: process.env.MYSQL_USER,
-            password: process.env.MYSQL_PASSWORD,
+        let db = mysql.createConnection({
+            host: process.env.SQL_HOST,
+            user: process.env.SQL_USER,
+            password: process.env.SQL_PASSWORD,
+            database: process.env.SQL_DATABASE
         });
 
-        sql.connect(function(err) {
+        db.connect(function(err) {
             if (err) {
                 console.error("VODKA > Unable to connect to MYSQL.");
                 console.error(err);
@@ -76,7 +77,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
                 app.listen(process.env.APP_PORT, () => {
                     console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
                     console.log("VODKA > Ready for connections.");
-                    loadRoutes(app, sql);
+                    loadRoutes(app, db);
                 });
             }
         });
