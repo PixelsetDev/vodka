@@ -1,5 +1,5 @@
 import {withLogto} from "@logto/express";
-import {config} from "../auth";
+import {config} from "../auth.js";
 
 export function routePacks (app, db) {
     app.get('/packs/list', withLogto(config), async (request, response) => {
