@@ -34,7 +34,11 @@ export function loadRoutes (app, db) {
             res.send({
                 'authed': true,
                 'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
-                'profile': request.user.claims
+                'profile': {
+                    "username": request.user.username,
+                    "name": request.user.name,
+                    "uuid": request.user.uuid,
+                }
             });
         } else {
             res.send({
