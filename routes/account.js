@@ -5,14 +5,13 @@ export function routeAccount (app) {
     app.get('/account', withLogto(config), (request, response) => {
         response.setHeader('content-type', 'application/json');
         if (request.user.isAuthenticated) {
-            console.log(request.user);
             response.send({
                 'authed': true,
                 'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
                 'profile': {
-                    "username": request.user.username,
-                    "name": request.user.name,
-                    "uuid": request.user.uuid,
+                    "username": request.user.claims.username,
+                    "name": request.user.claims.name,
+                    "uuid": request.user.claims.sub,
                 }
             });
         } else {
