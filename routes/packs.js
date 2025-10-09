@@ -28,14 +28,10 @@ export function routePacks (app, db) {
 
     app.get('/packs/owns', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
-        const urlParams = new URLSearchParams(window.location.search);
 
         if (request.user.isAuthenticated) {
             try {
-                const uuid = request.user.claims.sub;
-                const pack = urlParams.get('pack');
-
-                const [rows] = await db.execute('SELECT * FROM purchases WHERE uuid = ? AND pack = ?', [uuid,pack]);
+                const [rows] = await db.execute('SELECT * FROM purchases WHERE uuid = ? AND pack = ?', [request.user.claims.sub, request.query.pack]);
 
                 console.log(rows);
 
