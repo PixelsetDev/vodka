@@ -66,7 +66,8 @@ if (!process.env.TRUST_PROXY_HEADER) {
             host: process.env.SQL_HOST,
             user: process.env.SQL_USER,
             password: process.env.SQL_PASSWORD,
-            database: process.env.SQL_DATABASE
+            database: process.env.SQL_DATABASE,
+            connectTimeout: 10000
         });
 
         await db.connect(function(err) {
