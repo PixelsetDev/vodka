@@ -31,7 +31,7 @@ export function loadRoutes (app, db) {
     app.get('/account', withLogto(config), (request, response) => {
         response.setHeader('content-type', 'application/json');
         if (request.user.isAuthenticated) {
-            res.send({
+            response.send({
                 'authed': true,
                 'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
                 'profile': {
@@ -41,7 +41,7 @@ export function loadRoutes (app, db) {
                 }
             });
         } else {
-            res.send({
+            response.send({
                 'authed': false,
                 'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
                 'profile': null
