@@ -69,6 +69,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
             database: process.env.SQL_DATABASE
         });
 
+        console.log("DUMP:");
         console.log(db);
 
         db.connect(function(err) {
