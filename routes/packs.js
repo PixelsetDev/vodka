@@ -1,5 +1,6 @@
 import {withLogto} from "@logto/express";
 import {config} from "../auth.js";
+import Stripe from 'stripe';
 
 export function routePacks (app, db) {
     app.get('/packs/list', withLogto(config), async (request, response) => {
@@ -64,7 +65,7 @@ export function routePacks (app, db) {
         response.setHeader('content-type', 'application/json');
 
         if (request.user.isAuthenticated) {
-            const stripe = require('stripe')(process.env.STRIPE_KEY);
+            const stripe = new Stripe(process.env.STRIPE_KEY);
 
             const [row] = await db.execute('SELECT * FROM packs WHERE id = ?', [request.query.pack]);
 
