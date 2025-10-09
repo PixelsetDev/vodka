@@ -1,6 +1,6 @@
-import {routeAccount} from "./account";
-import {routePacks} from "./packs";
-import {routeHome} from "./home";
+import {routeAccount} from "./account.js";
+import {routePacks} from "./packs.js";
+import {routeHome} from "./home.js";
 
 export function loadRoutes (app, db) {
     routeHome(app)
