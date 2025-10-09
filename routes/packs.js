@@ -35,7 +35,7 @@ export function routePacks (app, db) {
                 const uuid = request.user.claims.sub;
                 const pack = urlParams.get('pack');
 
-                const [rows] = await db.execute('SELECT * FROM purchases WHERE uuid = ? AND pack = ?', [uuid,pack], callback);
+                const [rows] = await db.execute('SELECT * FROM purchases WHERE uuid = ? AND pack = ?', [uuid,pack]);
 
                 console.log(rows);
 
