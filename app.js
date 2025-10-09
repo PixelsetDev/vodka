@@ -69,6 +69,8 @@ if (!process.env.TRUST_PROXY_HEADER) {
             database: process.env.SQL_DATABASE
         });
 
+        console.log(db);
+
         db.connect(function(err) {
             if (err) {
                 console.error("VODKA > Unable to connect to MYSQL.");
