@@ -38,9 +38,9 @@ export function loadRoutes (app, db) {
             });
         } else {
             res.send({
-                'authed': true,
+                'authed': false,
                 'login-url': process.env.APP_HTTP_PROTOCOL+'://' + process.env.APP_BASE + '/logto/sign-in',
-                'profile': request.user.claims
+                'profile': null
             });
         }
     });
