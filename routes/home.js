@@ -1,6 +1,5 @@
 export function routeHome (app) {
     app.get("/", (request, response) => {
-        response.setHeader('content-type', 'text/html');
         response.redirect(process.env.OIDC_POST_LOGIN_URL);
     });
 
