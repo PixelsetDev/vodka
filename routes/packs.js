@@ -1,7 +1,7 @@
 import {withLogto} from "@logto/express";
 import {config} from "../auth.js";
 import Stripe from 'stripe';
-import {userOwns} from "../processes/packs";
+import {userOwns} from "../processes/packs.js";
 
 export function routePacks (app, db) {
     app.get('/packs/list', withLogto(config), async (request, response) => {
