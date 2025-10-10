@@ -7,7 +7,8 @@ import { config } from './auth.js';
 import { loadRoutes } from './routes/routes.js';
 import { loadSockets } from './sockets/sockets.js';
 import {Server} from 'socket.io';
-import mysql, {createServer} from 'mysql2';
+import { createServer } from 'http';
+import mysql from 'mysql2';
 let oidcConnected;
 
 console.log("VODKA > Loading...");
@@ -78,7 +79,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
             const server = createServer(app);
             server.listen(process.env.APP_PORT);
 
-            console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
+            console.log("VODKA > HTTP & WSS Listening on PORT:", process.env.APP_PORT);
             console.log("VODKA > Ready for connections.");
             loadSockets(app, db, new Server(server));
             loadRoutes(app, db);
