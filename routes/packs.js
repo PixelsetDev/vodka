@@ -8,7 +8,7 @@ export function routePacks (app, db) {
         response.setHeader('content-type', 'application/json');
         if (isAuthenticated(request.user)) {
             try {
-                const [rows] = await db.query("SELECT * FROM packs");
+                const [rows] = db.query("SELECT * FROM packs");
                 response.send({
                     code: 200,
                     message: "OK",
@@ -21,7 +21,6 @@ export function routePacks (app, db) {
                     data: null
                 });
             }
-
         } else {
             response.send({
                 code: 401,
