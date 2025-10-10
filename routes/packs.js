@@ -4,31 +4,34 @@ import Stripe from 'stripe';
 import {userOwns} from "../processes/packs.js";
 
 export function routePacks (app, db) {
-    app.get('/packs/list', withLogto(config), async (request, response) => {
+    app.get('/packs/list', withLogto(config), (request, response) => {
         response.setHeader('content-type', 'application/json');
+
         if (isAuthenticated(request.user)) {
-            try {
-                const rows = db.query("SELECT * FROM packs");
+            db.query('SELECT * FROM packs', (err, rows) => {
+                if (err) {
+                    return response.send({
+                        code: 500,
+                        message: err.message,
+                        data: null
+                    });
+                }
+
                 response.send({
                     code: 200,
-                    message: "OK",
+                    message: 'OK',
                     data: rows
                 });
-            } catch (err) {
-                response.send({
-                    code: 500,
-                    message: err.message,
-                    data: null
-                });
-            }
+            });
         } else {
             response.send({
                 code: 401,
-                message: "Unauthorized",
+                message: 'Unauthorized',
                 data: null
-            })
+            });
         }
     });
+
 
     app.get('/packs/owns', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
