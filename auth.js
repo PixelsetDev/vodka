@@ -7,10 +7,14 @@ export const config = {
 
 export function isAuthenticated(user) {
     if (user.isAuthenticated) {
+        console.log("authenticated");
         let roles = user.claims.roles;
 
+        console.log(roles);
         if (roles instanceof Array) {
+            console.log("array");
             if (roles.includes("D3:ACCESS_PREPROD")) {
+                console.log("includes");
                 return true;
             }
         }
