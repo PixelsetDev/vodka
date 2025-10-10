@@ -5,7 +5,7 @@ import session from 'express-session';
 import { handleAuthRoutes } from '@logto/express';
 import { config } from './auth.js';
 import { loadRoutes } from './routes/routes.js';
-import Server from 'socket.io';
+import {Server} from 'socket.io';
 import mysql, {createServer} from 'mysql2';
 let oidcConnected;
 
