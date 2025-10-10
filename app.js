@@ -75,14 +75,13 @@ if (!process.env.TRUST_PROXY_HEADER) {
 
             console.log("VODKA > Connected to MYSQL.");
 
-            app.listen(process.env.APP_PORT, () => {
-                console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
-                console.log("VODKA > Ready for connections.");
-                loadRoutes(app, db);
-            });
-
             const server = createServer(app);
+            server.listen(process.env.APP_PORT);
+
+            console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
+            console.log("VODKA > Ready for connections.");
             loadSockets(app, db, new Server(server));
+            loadRoutes(app, db);
 
         } catch (err) {
             console.error("VODKA > Unable to connect to MYSQL.");
