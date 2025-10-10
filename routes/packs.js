@@ -8,7 +8,7 @@ export function routePacks (app, db) {
         response.setHeader('content-type', 'application/json');
         if (isAuthenticated(request.user)) {
             try {
-                const [rows] = db.query("SELECT * FROM packs");
+                const rows = db.query("SELECT * FROM packs");
                 response.send({
                     code: 200,
                     message: "OK",
