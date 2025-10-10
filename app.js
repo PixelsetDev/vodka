@@ -5,6 +5,7 @@ import session from 'express-session';
 import { handleAuthRoutes } from '@logto/express';
 import { config } from './auth.js';
 import { loadRoutes } from './routes/routes.js';
+import { loadSockets } from './sockets/sockets.js';
 import {Server} from 'socket.io';
 import mysql, {createServer} from 'mysql2';
 let oidcConnected;
@@ -81,11 +82,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
             });
 
             const server = createServer(app);
-            const io = new Server(server);
-
-            io.on('connection', (socket) => {
-                console.log('a user connected');
-            });
+            loadSockets(app, db, new Server(server));
 
         } catch (err) {
             console.error("VODKA > Unable to connect to MYSQL.");

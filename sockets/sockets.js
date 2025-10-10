@@ -1,0 +1,11 @@
+export function loadRoutes (app, db, io) {
+    io.on('connect', (socket) => {
+        console.log('A user connected');
+        socket.emit('connected', socket);
+    });
+}
+
+/*
+Join game: server.join('000000');
+End game: io.in("room-101").disconnectSockets();
+ */

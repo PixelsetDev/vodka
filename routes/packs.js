@@ -50,6 +50,12 @@ export function routePacks (app, db) {
     });
 
     app.get('/packs/purchase', withLogto(config), async (request, response) => {
+        /**
+         * Reasons:
+         * 0 - Testing purposes (Temp)
+         * 1 - Purchased
+         * 2 - Gifted
+         */
         response.setHeader('content-type', 'application/json');
 
         if (request.user.isAuthenticated) {
