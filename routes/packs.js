@@ -1,6 +1,7 @@
 import {withLogto} from "@logto/express";
 import {config} from "../auth.js";
 import Stripe from 'stripe';
+import {userOwns} from "../processes/packs";
 
 export function routePacks (app, db) {
     app.get('/packs/list', withLogto(config), async (request, response) => {
@@ -10,19 +11,22 @@ export function routePacks (app, db) {
                 const [rows] = await db.query("SELECT * FROM packs");
                 response.send({
                     code: 200,
-                    data: rows,
+                    message: "OK",
+                    data: rows
                 });
             } catch (err) {
                 response.send({
                     code: 500,
-                    data: err.message,
+                    message: err.message,
+                    data: null
                 });
             }
 
         } else {
             response.send({
-                "code": 403,
-                "data": null,
+                code: 401,
+                message: "Unauthorized",
+                data: null
             })
         }
     });
@@ -31,33 +35,17 @@ export function routePacks (app, db) {
         response.setHeader('content-type', 'application/json');
 
         if (request.user.isAuthenticated) {
-            try {
-                const [rows] = await db.execute('SELECT * FROM purchases WHERE uuid = ? AND pack = ?', [request.user.claims.sub, request.query.pack]);
-
-                console.log(rows);
-                if (rows.length === 0) {
-                    response.send({
-                        code: 200,
-                        data: { "owns": false },
-                    });
-                } else {
-                    response.send({
-                        code: 200,
-                        data: { "owns": true },
-                    });
-                }
-            } catch (err) {
-                response.send({
-                    code: 500,
-                    data: err.message,
-                });
-            }
-
+            response.send({
+                code: 200,
+                message: "OK",
+                data: userOwns(db, request.user.claims.sub, request.query.pack)
+            });
         } else {
             response.send({
-                "code": 403,
-                "data": null,
-            })
+                code: 401,
+                message: "Unauthorized",
+                data: null
+            });
         }
     });
 
@@ -71,8 +59,9 @@ export function routePacks (app, db) {
 
             if (row.length === 0) {
                 response.send({
-                    "code": 404,
-                    "data": null,
+                    code: 404,
+                    message: "Not Found",
+                    data: null
                 })
             } else {
                 const session = await stripe.checkout.sessions.create({
@@ -89,8 +78,9 @@ export function routePacks (app, db) {
             }
         } else {
             response.send({
-                "code": 403,
-                "data": null,
+                code: 401,
+                message: "Unauthorized",
+                data: null
             })
         }
     });
