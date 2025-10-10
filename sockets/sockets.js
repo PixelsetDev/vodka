@@ -1,7 +1,6 @@
 export function loadSockets (app, db, io) {
     io.on('connect', (socket) => {
-        console.log('A user connected');
-        socket.emit('connected', 'success');
+        socket.emit('screen', 'disclaimer');
     });
 }
 
