@@ -4,3 +4,17 @@ export const config = {
     endpoint: process.env.APP_HTTP_PROTOCOL+'://'+process.env.OIDC_BASE,
     baseUrl: process.env.APP_HTTP_PROTOCOL+'://'+process.env.APP_BASE
 };
+
+export function isAuthenticated(user) {
+    if (user.isAuthenticated) {
+        let roles = user.claims.roles;
+
+        if (roles instanceof Array) {
+            if (roles.includes("D3:ACCESS_PREPROD")) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}

@@ -1,12 +1,12 @@
 import {withLogto} from "@logto/express";
-import {config} from "../auth.js";
+import {config, isAuthenticated} from "../auth.js";
 import Stripe from 'stripe';
 import {userOwns} from "../processes/packs.js";
 
 export function routePacks (app, db) {
     app.get('/packs/list', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
-        if (request.user.isAuthenticated) {
+        if (isAuthenticated(request.user)) {
             try {
                 const [rows] = await db.query("SELECT * FROM packs");
                 response.send({
@@ -34,7 +34,7 @@ export function routePacks (app, db) {
     app.get('/packs/owns', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
 
-        if (request.user.isAuthenticated) {
+        if (isAuthenticated(request.user)) {
             response.send({
                 code: 200,
                 message: "OK",
@@ -58,7 +58,7 @@ export function routePacks (app, db) {
          */
         response.setHeader('content-type', 'application/json');
 
-        if (request.user.isAuthenticated) {
+        if (isAuthenticated(request.user)) {
             const stripe = new Stripe(process.env.STRIPE_KEY);
 
             const [row] = await db.execute('SELECT * FROM packs WHERE id = ?', [request.query.pack]);

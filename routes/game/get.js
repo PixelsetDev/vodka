@@ -1,12 +1,12 @@
 import {withLogto} from "@logto/express";
-import {config} from "../../auth.js";
+import {config, isAuthenticated} from "../../auth.js";
 import {fetchExistingGame} from "../../processes/gameManager.js";
 
 export function routeGameFetch (app, db) {
     app.get('/game', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
 
-        if (request.user.isAuthenticated) {
+        if (isAuthenticated(request.user)) {
             response.send({
                 code: 200,
                 message: "OK",

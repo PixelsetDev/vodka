@@ -1,12 +1,12 @@
 import {withLogto} from "@logto/express";
-import {config} from "../../auth.js";
+import {config, isAuthenticated} from "../../auth.js";
 import {createNewGame} from "../../processes/gameManager.js";
 
 export function routeGameStart (app, db) {
     app.post('/game', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
 
-        if (request.user.isAuthenticated) {
+        if (isAuthenticated(request.user)) {
             let code;
             if (request.body.mode === "1") {
                 // Big screen

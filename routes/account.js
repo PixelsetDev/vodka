@@ -1,10 +1,10 @@
 import {withLogto} from "@logto/express";
-import {config} from "../auth.js";
+import {config, isAuthenticated} from "../auth.js";
 
 export function routeAccount (app) {
     app.get('/account', withLogto(config), (request, response) => {
         response.setHeader('content-type', 'application/json');
-        if (request.user.isAuthenticated) {
+        if (isAuthenticated(request.user)) {
             response.send({
                 code: 200,
                 message: "OK",
@@ -12,6 +12,7 @@ export function routeAccount (app) {
                     username: request.user.claims.username,
                     name: request.user.claims.name,
                     uuid: request.user.claims.sub,
+                    roles: request.user.claims.roles,
                 }
             });
         } else {
