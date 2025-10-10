@@ -1,5 +1,10 @@
 export function routeHome (app) {
     app.get("/", (request, response) => {
+        response.setHeader('content-type', 'text/html');
+        response.redirect(process.env.OIDC_POST_LOGIN_URL);
+    });
+
+    app.get("/status", (request, response) => {
         response.setHeader('content-type', 'application/json');
         if (process.env.APP_DEBUG === "true") {
             response.send({
@@ -16,6 +21,7 @@ export function routeHome (app) {
                     'OIDC_BASE': process.env.OIDC_BASE,
                     'OIDC_CLIENT_ID': process.env.OIDC_CLIENT_ID,
                     'OIDC_SECRET': '[REDACTED]',
+                    'OIDC_POST_LOGIN_URL': process.env.OIDC_POST_LOGIN_URL,
                 }
             });
         } else {

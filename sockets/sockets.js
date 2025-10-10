@@ -1,6 +1,6 @@
 export function loadSockets (app, db, io) {
-    io.on('connect', (socket) => {
-        socket.emit('screen', 'disclaimer');
+    io.on('connect', async (socket) => {
+        socket.emit('initsuccess','success')
     });
 }
 
