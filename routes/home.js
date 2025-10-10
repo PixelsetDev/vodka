@@ -21,6 +21,7 @@ export function routeHome (app) {
                     'OIDC_CLIENT_ID': process.env.OIDC_CLIENT_ID,
                     'OIDC_SECRET': '[REDACTED]',
                     'OIDC_POST_LOGIN_URL': process.env.OIDC_POST_LOGIN_URL,
+                    'STRIPE_KEY': '[REDACTED]',
                 }
             });
         } else {
