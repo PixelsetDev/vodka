@@ -1,6 +1,6 @@
 import {withLogto} from "@logto/express";
 import {config} from "../../auth.js";
-import {fetchExistingGame} from "../../processes/gameManager";
+import {fetchExistingGame} from "../../processes/gameManager.js";
 
 export function routeGameFetch (app, db) {
     app.get('/game', withLogto(config), async (request, response) => {

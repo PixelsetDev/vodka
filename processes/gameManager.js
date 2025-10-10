@@ -1,4 +1,4 @@
-import {userOwns} from "./packs";
+import {userOwns} from "./packs.js";
 
 export async function createNewGame(db, uuid, type, packs) {
     if (!Array.isArray(packs)) {

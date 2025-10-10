@@ -1,6 +1,6 @@
 import {withLogto} from "@logto/express";
 import {config} from "../../auth.js";
-import {createNewGame} from "../../processes/gameManager";
+import {createNewGame} from "../../processes/gameManager.js";
 
 export function routeGameStart (app, db) {
     app.post('/game', withLogto(config), async (request, response) => {
