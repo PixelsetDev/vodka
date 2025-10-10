@@ -5,7 +5,8 @@ import session from 'express-session';
 import { handleAuthRoutes } from '@logto/express';
 import { config } from './auth.js';
 import { loadRoutes } from './routes/routes.js';
-import mysql from 'mysql2/promise';
+import Server from 'socket.io';
+import mysql, {createServer} from 'mysql2';
 let oidcConnected;
 
 console.log("VODKA > Loading...");
@@ -77,6 +78,13 @@ if (!process.env.TRUST_PROXY_HEADER) {
                 console.log("VODKA > Listening on PORT:", process.env.APP_PORT);
                 console.log("VODKA > Ready for connections.");
                 loadRoutes(app, db);
+            });
+
+            const server = createServer(app);
+            const io = new Server(server);
+
+            io.on('connection', (socket) => {
+                console.log('a user connected');
             });
 
         } catch (err) {
