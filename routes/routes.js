@@ -1,8 +1,8 @@
 import {routeAccount} from "./account.js";
 import {routePacks} from "./packs.js";
 import {routeHome} from "./home.js";
-import {routeGameStart} from "./game/create";
-import {routeGameFetch} from "./game/get";
+import {routeGameStart} from "./game/create.js";
+import {routeGameFetch} from "./game/get.js";
 
 export function loadRoutes (app, db) {
     routeHome(app)
