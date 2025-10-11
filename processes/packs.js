@@ -1,7 +1,7 @@
 export async function userOwns(db, uuid, packID) {
     try {
         const packs = await new Promise((res, rej) =>
-            db.query('SELECT * FROM packs WHERE status = 1 AND all_owns = 1', (err, rows) => err ? rej(err) : res(rows))
+            db.query('SELECT * FROM packs WHERE status = 1 AND all_owns = 1 AND id = ?', [packID], (err, rows) => err ? rej(err) : res(rows))
         );
         if (packs.length !== 0) return true;
 
