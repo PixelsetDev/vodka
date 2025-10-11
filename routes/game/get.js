@@ -17,7 +17,7 @@ export function routeGameFetch (app, db) {
                 response.send({
                     code: 200,
                     message: "OK",
-                    data: await fetchExistingGame(db, request.query.code)
+                    data: await fetchExistingGame(db, request.query.code, request.user.claims.sub)
                 })
             } else {
                 response.send({

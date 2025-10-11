@@ -1,6 +1,6 @@
 import {userOwns} from "./packs.js";
 
-export async function createNewGame(db, uuid, type, packs) {
+export async function createNewGame(db, uuid, mode, packs) {
     if (!Array.isArray(packs)) {
         return -3;
     }
@@ -16,10 +16,10 @@ export async function createNewGame(db, uuid, type, packs) {
         const [rows] = await db.query("SELECT * FROM games WHERE code = ?", [code]);
 
         if (rows.length === 0) {
-            await db.query("INSERT INTO games (id, code, type, packs) VALUES (?,?,?,?)", [null, code, type, packs]);
+            await db.query("INSERT INTO games (id, code, host, state, mode, packs) VALUES (?,?,?,?,?,?)", [null, code, uuid, 0, mode, packs]);
             return code;
         } else {
-            await createNewGame(db, uuid, type, packs);
+            await createNewGame(db, uuid, mode, packs);
         }
     } catch (err) {
         console.error(err);
@@ -27,11 +27,33 @@ export async function createNewGame(db, uuid, type, packs) {
     }
 }
 
-export async function fetchExistingGame(db, code) {
+export async function fetchExistingGame(db, code, host) {
     try {
-        const [rows] = await db.query("SELECT * FROM games WHERE code = ?", [code]);
+        const [rows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);
 
         return rows;
+    } catch (err) {
+        console.error(err);
+        return [null];
+    }
+}
+
+export async function getGameQuestions(db, code, host) {
+    try {
+        const [gameRows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);
+        const [questionRows] = await db.query("SELECT * FROM content WHERE pack = ?", [[gameRows][0].packs]);
+
+        return questionRows;
+    } catch (err) {
+        console.error(err);
+        return [null];
+    }
+}
+
+export async function updateGameState(db, code, host) {
+    try {
+        const [rows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);
+        await db.query("UPDATE games SET state = ? WHERE code = ? AND host = ?", [[rows][0].state + 1, code, host]);
     } catch (err) {
         console.error(err);
         return [null];
