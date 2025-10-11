@@ -8,10 +8,10 @@ export function routeGameStart (app, db) {
 
         if (isAuthenticated(request.user)) {
             let code;
-            if (request.body.mode === "1") {
+            if (request.body.mode === 1) {
                 // Big screen
                 code = await createNewGame(db, request.user.claims.sub, 1, request.body.packs);
-            } else if (request.query.mode === "2") {
+            } else if (request.query.mode === 2) {
                 // Multiplayer
                 code = await createNewGame(db, request.user.claims.sub, 2, request.body.packs);
             } else {
