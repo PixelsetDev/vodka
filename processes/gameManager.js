@@ -22,6 +22,7 @@ export async function createNewGame(db, uuid, type, packs) {
             await createNewGame(db, uuid, type, packs);
         }
     } catch (err) {
+        console.error(err);
         return -2;
     }
 }
@@ -32,6 +33,7 @@ export async function fetchExistingGame(db, code) {
 
         return rows;
     } catch (err) {
+        console.error(err);
         return [null];
     }
 }

@@ -8,6 +8,7 @@ export async function userOwns(db, uuid, packID) {
         console.log(purchases);
         return purchases.length !== 0;
     } catch (err) {
+        console.error(err);
         return false;
     }
 }
