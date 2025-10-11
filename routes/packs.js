@@ -43,7 +43,7 @@ export function routePacks (app, db) {
             response.send({
                 code: 200,
                 message: "OK",
-                data: userOwns(db, request.user.claims.sub, request.query.pack)
+                data: await userOwns(db, request.user.claims.sub, request.query.pack)
             });
         } else {
             response.send({
