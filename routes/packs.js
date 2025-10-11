@@ -17,6 +17,10 @@ export function routePacks (app, db) {
                     });
                 }
 
+                for (let row in rows) {
+                    rows[row].owns = userOwns(db, request.user.claims.sub, rows[row].id);
+                }
+
                 response.send({
                     code: 200,
                     message: 'OK',
@@ -31,7 +35,6 @@ export function routePacks (app, db) {
             });
         }
     });
-
 
     app.get('/packs/owns', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
