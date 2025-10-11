@@ -8,18 +8,21 @@ export function routeGameStart (app, db) {
 
         if (isAuthenticated(request.user)) {
             let code;
-            if (request.body.mode === typeof undefined || request.body.packs !== typeof Array) {
+            console.log(request.body);
+            if (typeof request.body.mode === 'undefined' || !Array.isArray(request.body.packs)) {
                 code = -3
+                console.log(1);
             } else {
                 if (request.body.mode === 1) {
                     // Big screen
                     code = await createNewGame(db, request.user.claims.sub, 1, request.body.packs);
-                } else if (request.query.mode === 2) {
+                } else if (request.body.mode === 2) {
                     // Multiplayer
                     code = await createNewGame(db, request.user.claims.sub, 2, request.body.packs);
                 } else {
                     // Bad type
                     code = -3;
+                    console.log(1);
                 }
             }
 
