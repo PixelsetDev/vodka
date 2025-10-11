@@ -17,6 +17,7 @@ dotenv.config();
 
 const app = express();
 
+app.use(express.json());
 app.use(cookieParser());
 app.use(
     session({
@@ -25,7 +26,6 @@ app.use(
     })
 );
 app.use(handleAuthRoutes(config));
-app.use(express.json());
 
 console.log("VODKA > Loaded config.");
 
