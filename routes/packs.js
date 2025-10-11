@@ -8,7 +8,7 @@ export function routePacks (app, db) {
         response.setHeader('content-type', 'application/json');
 
         if (isAuthenticated(request.user)) {
-            db.query('SELECT * FROM packs', (err, rows) => {
+            db.query('SELECT * FROM packs', async (err, rows) => {
                 if (err) {
                     return response.send({
                         code: 500,
@@ -18,7 +18,7 @@ export function routePacks (app, db) {
                 }
 
                 for (let row in rows) {
-                    rows[row].owns = userOwns(db, request.user.claims.sub, rows[row].id);
+                    rows[row].owns = await userOwns(db, request.user.claims.sub, rows[row].id);
                 }
 
                 response.send({

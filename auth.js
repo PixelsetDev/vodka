@@ -12,7 +12,6 @@ export function isAuthenticated(user) {
     if (user.isAuthenticated) {
         let roles = user.claims.roles;
 
-        console.log(roles);
         if (roles instanceof Array) {
             if (roles.includes("D3:ACCESS_PREPROD")) {
                 return true;
