@@ -4,29 +4,29 @@ import Stripe from 'stripe';
 import {userOwns} from "../processes/packs.js";
 
 export function routePacks (app, db) {
-    app.get('/packs/list', withLogto(config), (request, response) => {
+    app.get('/packs/list', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
 
         if (isAuthenticated(request.user)) {
-            db.query('SELECT * FROM packs', async (err, rows) => {
-                if (err) {
-                    return response.send({
-                        code: 500,
-                        message: err.message,
-                        data: null
-                    });
-                }
+            try {
+                const [rows] = await db.query('SELECT * FROM packs');
 
-                for (let row in rows) {
-                    rows[row].owns = await userOwns(db, request.user.claims.sub, rows[row].id);
+                for (const row of rows) {
+                    row.owns = await userOwns(db, request.user.claims.sub, row.id);
                 }
 
                 response.send({
                     code: 200,
                     message: 'OK',
-                    data: rows
+                    data: rows,
                 });
-            });
+            } catch (err) {
+                response.send({
+                    code: 500,
+                    message: err.message,
+                    data: null,
+                });
+            }
         } else {
             response.send({
                 code: 401,
