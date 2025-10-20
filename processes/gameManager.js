@@ -1,6 +1,7 @@
 import {userOwns} from "./packs.js";
 
 export async function createNewGame(db, uuid, mode, packs) {
+    console.log(packs);
     if (!Array.isArray(packs)) {
         return -3;
     }
