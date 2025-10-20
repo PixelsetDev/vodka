@@ -11,7 +11,6 @@ export function routeGameStart (app, db) {
             if (typeof request.body.mode === 'undefined' || !Array.isArray(request.body.packs)) {
                 code = -3
             } else {
-                console.log(request.body.packs);
                 if (request.body.mode === 1) {
                     // Big screen
                     code = await createNewGame(db, request.user.claims.sub, 1, request.body.packs);

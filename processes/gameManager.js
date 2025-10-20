@@ -7,6 +7,7 @@ export async function createNewGame(db, uuid, mode, packs) {
     }
 
     for (let pack in packs) {
+        console.log(pack);
         if (!await userOwns(db, uuid, pack)) {
             return -1;
         }
