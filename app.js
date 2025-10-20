@@ -8,7 +8,7 @@ import { loadRoutes } from './routes/routes.js';
 import { loadSockets } from './sockets/sockets.js';
 import {Server} from 'socket.io';
 import { createServer } from 'http';
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 let oidcConnected;
 
 console.log("VODKA > Loading...");
