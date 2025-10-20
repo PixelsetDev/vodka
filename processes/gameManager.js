@@ -1,7 +1,6 @@
 import {userOwns} from "./packs.js";
 
 export async function createNewGame(db, uuid, mode, packs) {
-    console.log(packs);
     if (!Array.isArray(packs)) {
         return -3;
     }
@@ -9,7 +8,10 @@ export async function createNewGame(db, uuid, mode, packs) {
     for (let pack in packs) {
         console.log(pack);
         if (!await userOwns(db, uuid, pack)) {
+            console.log('no');
             return -1;
+        } else {
+            console.log('yes');
         }
     }
 
