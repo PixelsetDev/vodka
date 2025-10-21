@@ -38,17 +38,6 @@ export async function fetchExistingGame(db, code, host) {
     }
 }
 
-export async function getGamePlayers(db, code, host) {
-    try {
-        const [rows] = await db.query("SELECT players FROM games WHERE code = ? AND host = ?", [code, host]);
-
-        return rows;
-    } catch (err) {
-        console.error(err);
-        return [null];
-    }
-}
-
 export async function getGameQuestions(db, code, host) {
     try {
         const [gameRows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);

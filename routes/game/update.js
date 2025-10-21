@@ -1,6 +1,6 @@
 import {withLogto} from "@logto/express";
 import {config, isAuthenticated} from "../../auth.js";
-import {updateGameState, getGamePlayers} from "../../processes/gameManager.js";
+import {updateGameState, getGamePlayers, fetchExistingGame} from "../../processes/gameManager.js";
 
 export function routeGameUpdate(app, db) {
     app.put('/game', withLogto(config), async (request, response) => {
@@ -18,7 +18,7 @@ export function routeGameUpdate(app, db) {
                     response.send({
                         code: 200,
                         message: "OK",
-                        data: await getGamePlayers(db, request.body.code, request.user.claims.sub)
+                        data: await fetchExistingGame(db, request.body.code, request.user.claims.sub)
                     });
                 } else {
                     response.send({
