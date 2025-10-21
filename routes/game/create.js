@@ -13,10 +13,10 @@ export function routeGameCreate(app, db) {
             } else {
                 if (request.body.mode === 1) {
                     // Big screen
-                    code = await createNewGame(db, request.user.claims.sub, 1, request.body.packs);
+                    code = await createNewGame(db, request.user.claims.sub, 1, request.body.packs, request.body.players);
                 } else if (request.body.mode === 2) {
                     // Multiplayer
-                    code = await createNewGame(db, request.user.claims.sub, 2, request.body.packs);
+                    code = await createNewGame(db, request.user.claims.sub, 2, request.body.packs, request.body.players);
                 } else {
                     // Bad type
                     code = -3;

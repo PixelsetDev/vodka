@@ -1,6 +1,6 @@
 import {userOwns} from "./packs.js";
 
-export async function createNewGame(db, uuid, mode, packs) {
+export async function createNewGame(db, uuid, mode, packs, bsPlayers) {
     if (!Array.isArray(packs)) {
         return -3;
     }
@@ -16,7 +16,7 @@ export async function createNewGame(db, uuid, mode, packs) {
         const [rows] = await db.query("SELECT * FROM games WHERE code = ?", [code]);
 
         if (rows.length === 0) {
-            await db.query("INSERT INTO games (id, code, host, state, mode, packs) VALUES (?,?,?,?,?,?)", [null, code, uuid, 0, mode, packs]);
+            await db.query("INSERT INTO games (id, code, host, state, mode, packs, players) VALUES (?,?,?,?,?,?,?)", [null, code, uuid, 0, mode, packs, bsPlayers]);
             return code;
         } else {
             await createNewGame(db, uuid, mode, packs);
@@ -30,6 +30,17 @@ export async function createNewGame(db, uuid, mode, packs) {
 export async function fetchExistingGame(db, code, host) {
     try {
         const [rows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);
+
+        return rows;
+    } catch (err) {
+        console.error(err);
+        return [null];
+    }
+}
+
+export async function getGamePlayers(db, code, host) {
+    try {
+        const [rows] = await db.query("SELECT players FROM games WHERE code = ? AND host = ?", [code, host]);
 
         return rows;
     } catch (err) {
