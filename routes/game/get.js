@@ -2,7 +2,7 @@ import {withLogto} from "@logto/express";
 import {config, isAuthenticated} from "../../auth.js";
 import {fetchExistingGame} from "../../processes/gameManager.js";
 
-export function routeGameFetch (app, db) {
+export function routeGameGet(app, db) {
     app.get('/game', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
 

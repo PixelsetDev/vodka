@@ -2,7 +2,7 @@ import {withLogto} from "@logto/express";
 import {config, isAuthenticated} from "../../auth.js";
 import {createNewGame} from "../../processes/gameManager.js";
 
-export function routeGameStart (app, db) {
+export function routeGameCreate(app, db) {
     app.post('/game', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
 
