@@ -40,8 +40,9 @@ export async function fetchExistingGame(db, code, host) {
         }
 
         const game = rows[0];
-
+        console.log(`MODE: ${game.mode}`);
         if (game.mode === 0) {
+            console.log(`PACKS: ${game.packs}`);
             const packs = game.packs.split(",");
             game.activities = await getAllActivities(db, game.host, packs);
         } else {
@@ -59,6 +60,9 @@ export async function fetchExistingGame(db, code, host) {
 export async function updateGameState(db, code, host) {
     try {
         const [rows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);
+        console.log(`ROWS: ${rows}`);
+        console.log(`ROWS0STATE: ${rows[0].state}`);
+        console.log(`ROWS0STATE+: ${rows[0].state+1}`);
         await db.query("UPDATE games SET state = ? WHERE code = ? AND host = ?", [[rows][0].state + 1, code, host]);
     } catch (err) {
         console.error(err);
