@@ -11,7 +11,7 @@ export function routeGameUpdate(app, db) {
                 response.send({
                     code: 400,
                     message: "Bad Request",
-                    data: null
+                    data: "Something went wrong sending the request, please try again later or contact our support team by clicking the button below for assistance."
                 });
             } else {
                 if (await updateGameState(db, request.body.code, request.user.claims.sub)) {
@@ -24,7 +24,7 @@ export function routeGameUpdate(app, db) {
                     response.send({
                         code: 500,
                         message: "Internal Server Error",
-                        data: null
+                        data: "Something went wrong with the server, please try again later or contact our support team by clicking the button below for assistance."
                     });
                 }
             }
@@ -32,7 +32,7 @@ export function routeGameUpdate(app, db) {
             response.send({
                 code: 401,
                 message: "Unauthorized",
-                data: null
+                data: "Your login session may have expired. Please click 'Exit', then try and log in again. If that doesn't fix your issue, please contact our support team for help."
             })
         }
     });
