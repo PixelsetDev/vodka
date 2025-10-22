@@ -30,18 +30,31 @@ export async function createNewGame(db, uuid, mode, packs, bsPlayers) {
 
 export async function fetchExistingGame(db, code, host) {
     try {
-        let [rows] = await db.query("SELECT `mode`,`host`,`packs`,`players` FROM games WHERE code = ? AND host = ?", [code, host]);
+        const [rows] = await db.query(
+            "SELECT `mode`,`host`,`packs`,`players` FROM games WHERE code = ? AND host = ?",
+            [code, host]
+        );
 
-        if (rows["mode"] === 0) {
-            rows["activities"] = await getAllActivities(db, rows.host, rows.packs.split(','));
+        if (rows.length === 0) {
+            return { code: 404, message: "Game not found", data: [] };
         }
 
-        return rows;
+        const game = rows[0];
+
+        if (game.mode === 0) {
+            const packs = game.packs.split(",");
+            game.activities = await getAllActivities(db, game.host, packs);
+        } else {
+            game.activities = [];
+        }
+
+        return { code: 200, message: "OK", data: [game] }; // wrap game in array
     } catch (err) {
-        console.error(err);
-        return [null];
+        console.error("VODKA > fetchExistingGame error:", err);
+        return { code: 500, message: "Internal error", data: [] };
     }
 }
+
 
 export async function updateGameState(db, code, host) {
     try {
