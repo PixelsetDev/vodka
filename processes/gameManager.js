@@ -1,5 +1,5 @@
 import {userOwns} from "./packs.js";
-import {getAllActivities} from "./activityManager";
+import {getAllActivities} from "./activityManager.js";
 
 export async function createNewGame(db, uuid, mode, packs, bsPlayers) {
     if (!Array.isArray(packs)) {
