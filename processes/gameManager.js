@@ -31,9 +31,10 @@ export async function createNewGame(db, uuid, mode, packs, bsPlayers) {
 export async function fetchExistingGame(db, code, host) {
     let rows = [];
     try {
-        rows.push(await db.query("SELECT `mode`,`host`,`packs`,`players` FROM games WHERE code = ? AND host = ?", [code, host]));
+        const [qr] = await db.query("SELECT `mode`,`host`,`packs`,`players` FROM games WHERE code = ? AND host = ?", [code, host]);
+        rows.push(qr);
 
-        if (rows.mode === 0) {
+        if (rows["mode"] === 0) {
             rows["activities"] = await getAllActivities(db, rows.host, rows.packs.split(','));
         }
 
