@@ -16,7 +16,7 @@ export async function createNewGame(db, uuid, mode, packs, bsPlayers) {
         const [rows] = await db.query("SELECT * FROM games WHERE code = ?", [code]);
 
         if (rows.length === 0) {
-            await db.query("INSERT INTO games (id, code, host, state, mode, packs, players) VALUES (?,?,?,?,?,?,'[?]')", [null, code, uuid, 0, mode, packs, bsPlayers]);
+            await db.query("INSERT INTO games (id, code, host, state, mode, packs, players) VALUES (?,?,?,?,?,?,?)", [null, code, uuid, 0, mode, packs, bsPlayers.toString()]);
             return code;
         } else {
             await createNewGame(db, uuid, mode, packs);
