@@ -8,7 +8,7 @@ import { loadRoutes } from './routes/routes.js';
 import { loadSockets } from './sockets/sockets.js';
 import {Server} from 'socket.io';
 import { createServer } from 'http';
-import {pool} from "./processes/database";
+import {pool} from "./processes/database.js";
 let oidcConnected;
 
 console.log("VODKA > Loading...");
