@@ -1,4 +1,5 @@
 import {userOwns} from "./packs.js";
+import {getAllActivities} from "./activityManager";
 
 export async function createNewGame(db, uuid, mode, packs, bsPlayers) {
     if (!Array.isArray(packs)) {
@@ -28,22 +29,15 @@ export async function createNewGame(db, uuid, mode, packs, bsPlayers) {
 }
 
 export async function fetchExistingGame(db, code, host) {
+    let rows = [];
     try {
-        const [rows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);
+        rows.push(await db.query("SELECT `mode`,`host`,`packs`,`players` FROM games WHERE code = ? AND host = ?", [code, host]));
+
+        if (rows.mode === 0) {
+            rows["activities"] = await getAllActivities(db, rows.host, rows.packs.split(','));
+        }
 
         return rows;
-    } catch (err) {
-        console.error(err);
-        return [null];
-    }
-}
-
-export async function getGameQuestions(db, code, host) {
-    try {
-        const [gameRows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);
-        const [questionRows] = await db.query("SELECT * FROM content WHERE pack = ?", [[gameRows][0].packs]);
-
-        return questionRows;
     } catch (err) {
         console.error(err);
         return [null];
