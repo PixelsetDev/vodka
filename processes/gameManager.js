@@ -40,9 +40,7 @@ export async function fetchExistingGame(db, code, host) {
         }
 
         const game = rows[0];
-        console.log(`MODE: ${game.mode}`);
         if (game.mode === 1) {
-            console.log(`PACKS: ${game.packs}`);
             const packs = game.packs.split(",");
             game.activities = await getAllActivities(db, game.host, packs);
         } else {
