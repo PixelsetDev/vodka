@@ -61,6 +61,7 @@ export async function updateGameState(db, code, host) {
     try {
         const [rows] = await db.query("SELECT * FROM games WHERE code = ? AND host = ?", [code, host]);
         await db.query("UPDATE games SET state = ? WHERE code = ? AND host = ?", [rows[0].state+1, code, host]);
+        return true;
     } catch (err) {
         console.error(err);
         return [null];
