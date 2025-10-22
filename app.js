@@ -8,7 +8,7 @@ import { loadRoutes } from './routes/routes.js';
 import { loadSockets } from './sockets/sockets.js';
 import {Server} from 'socket.io';
 import { createServer } from 'http';
-import mysql from 'mysql2/promise';
+import {pool} from "./processes/database";
 let oidcConnected;
 
 console.log("VODKA > Loading...");
@@ -66,13 +66,7 @@ if (!process.env.TRUST_PROXY_HEADER) {
     if (oidcConnected) {
         console.log("VODKA > Connecting to MYSQL...");
         try {
-            const db = await mysql.createConnection({
-                host: process.env.SQL_HOST,
-                user: process.env.SQL_USER,
-                password: process.env.SQL_PASSWORD?.trim(),
-                database: process.env.SQL_DATABASE,
-                connectTimeout: 10000
-            });
+            const db = await pool;
 
             console.log("VODKA > Connected to MYSQL.");
 
