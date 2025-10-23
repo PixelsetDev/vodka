@@ -41,8 +41,9 @@ export async function fetchExistingGame(db, code, host) {
 
         const game = rows[0];
         if (game.mode === 1) {
-            const packs = game.packs.split(",");
-            game.activities = await getAllActivities(db, game.host, packs);
+            game.packs = JSON.parse(game.packs);
+            game.players = JSON.parse(game.players);
+            game.activities = await getAllActivities(db, game.host, game.packs);
         } else {
             game.activities = [];
         }
