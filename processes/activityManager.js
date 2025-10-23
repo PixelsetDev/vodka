@@ -10,6 +10,7 @@ export async function getAllActivities(db, uuid, packs) {
 
             for (let row in rows) {
                 rows[row].responses = JSON.parse(rows[row].responses);
+                rows[row].pack = pack;
             }
             activities.push(...rows);
         }
