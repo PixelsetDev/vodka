@@ -8,6 +8,9 @@ export async function getAllActivities(db, uuid, packs) {
         if (owns) {
             const [rows] = await db.query("SELECT `heading`,`subheading`,`responses`,`skip` FROM activities WHERE pack = ?", [pack]);
 
+            for (let row in rows) {
+                rows[row].responses = JSON.parse(rows[row].responses);
+            }
             activities.push(...rows);
         }
     }
