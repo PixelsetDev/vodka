@@ -47,7 +47,7 @@ export async function fetchExistingGame(db, code, host) {
             game.activities = [];
         }
 
-        return { code: 200, message: "OK", data: [game] }; // wrap game in array
+        return { game }; // wrap game in array
     } catch (err) {
         console.error("VODKA > fetchExistingGame error:", err);
         return { code: 500, message: "Internal error", data: [] };
