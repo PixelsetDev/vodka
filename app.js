@@ -9,6 +9,7 @@ import { loadSockets } from './sockets/sockets.js';
 import {Server} from 'socket.io';
 import { createServer } from 'http';
 import {pool} from "./processes/database.js";
+import * as path from "node:path";
 let oidcConnected;
 
 console.log("VODKA > Loading...");
@@ -19,6 +20,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use('/static', express.static(path.join(__dirname, 'static')));
 app.use(
     session({
         secret: process.env.APP_SECRET,
