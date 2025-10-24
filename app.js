@@ -10,7 +10,10 @@ import {Server} from 'socket.io';
 import { createServer } from 'http';
 import {pool} from "./processes/database.js";
 import * as path from "node:path";
+import { fileURLToPath } from 'url';
 let oidcConnected;
+
+const dir = path.dirname(fileURLToPath(import.meta.url));
 
 console.log("VODKA > Loading...");
 
@@ -20,7 +23,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use('/static', express.static(path.join(__dirname, 'static')));
+app.use('/static', express.static(path.join(dir, 'static')));
 app.use(
     session({
         secret: process.env.APP_SECRET,
