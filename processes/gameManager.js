@@ -39,11 +39,6 @@ export async function fetchExistingGame(db, code, host) {
             return { code: 404, message: "Game not found", data: [] };
         }
 
-        for (let i in rows.packs) {
-            rows.packs[i].id = rows.packs[i];
-            rows.packs[i].name = fetchPackName(db, rows.packs[i].id);
-        }
-
         const game = rows[0];
         if (game.mode === 1) {
             game.packs = JSON.parse(game.packs);

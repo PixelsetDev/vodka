@@ -12,14 +12,3 @@ export async function userOwns(db, uuid, packID) {
         return false;
     }
 }
-
-export async function fetchPackName(db, packID) {
-    try {
-        const [packs] = await db.query('SELECT `name` FROM packs WHERE status = 1 AND id = ?', [packID]);
-
-        return packs;
-    } catch (err) {
-        console.error(err);
-        return false;
-    }
-}
