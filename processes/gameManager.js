@@ -1,4 +1,4 @@
-import {userOwns} from "./packs.js";
+import {fetchPackName, userOwns} from "./packs.js";
 import {getAllActivities} from "./activityManager.js";
 
 export async function createNewGame(db, uuid, mode, packs, bsPlayers) {
@@ -37,6 +37,11 @@ export async function fetchExistingGame(db, code, host) {
 
         if (rows.length === 0) {
             return { code: 404, message: "Game not found", data: [] };
+        }
+
+        for (let i in rows.packs) {
+            rows.packs[i].id = rows.packs[i];
+            rows.packs[i].name = fetchPackName(db, rows.packs[i]);
         }
 
         const game = rows[0];
