@@ -11,9 +11,13 @@ export function routePacks(app, db) {
             try {
                 const [rows] = await db.query('SELECT * FROM packs');
 
-                for (const row of rows) {
-                    row.owns = await userOwns(db, request.user.claims.sub, row.id);
-                    row.acount = await db.query('SELECT * FROM activities WHERE pack = ?',[row.id]).count;
+                for (const row in rows) {
+                    if (rows[row].all_owns) {
+                        rows[row].owns = true;
+                    } else {
+                        rows[row].owns = await userOwns(db, request.user.claims.sub, row.id);
+                    }
+                    rows[row].acount = await db.query('SELECT * FROM activities WHERE pack = ?',[row.id]).count;
                 }
 
                 response.send({
