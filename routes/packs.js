@@ -3,7 +3,7 @@ import {config, isAuthenticated} from "../auth.js";
 import Stripe from 'stripe';
 import {userOwns} from "../processes/packs.js";
 
-export function routePacks (app, db) {
+export function routePacks(app, db) {
     app.get('/packs/list', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
 
@@ -13,6 +13,7 @@ export function routePacks (app, db) {
 
                 for (const row of rows) {
                     row.owns = await userOwns(db, request.user.claims.sub, row.id);
+                    row.acount = await db.query('SELECT * FROM activities WHERE pack = ?',[row.id]).count;
                 }
 
                 response.send({
