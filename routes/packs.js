@@ -18,7 +18,7 @@ export function routePacks(app, db) {
                         rows[row].owns = await userOwns(db, request.user.claims.sub, row.id);
                     }
                     delete rows[row].all_owns;
-                    rows[row].activities = await db.query('SELECT * FROM activities WHERE pack = ?',[row.id]).count;
+                    rows[row].activities = (await db.query('SELECT id FROM activities WHERE pack = ?', [rows[row].id]))[0].length;
                 }
 
                 response.send({
