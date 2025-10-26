@@ -9,6 +9,7 @@ export async function getAllActivities(db, uuid, packs) {
             const [rows] = await db.query("SELECT `heading`,`subheading`,`responses`,`skip`,`persistent` FROM activities WHERE pack = ?", [pack]);
 
             for (let row in rows) {
+                console.log(rows[row]);
                 rows[row].responses = JSON.parse(rows[row].responses);
                 rows[row].pack = pack;
             }
