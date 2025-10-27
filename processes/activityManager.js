@@ -6,10 +6,11 @@ export async function getAllActivities(db, uuid, packs) {
     for (const pack of packs) {
         const owns = await userOwns(db, uuid, pack);
         if (owns) {
-            const [rows] = await db.query("SELECT `heading`,`subheading`,`responses`,`skip`,`persistent` FROM activities WHERE pack = ?", [pack]);
+            const [rows] = await db.query("SELECT `heading`,`subheading`,`responses`,`skip`,`persistent`,`type` FROM activities WHERE pack = ?", [pack]);
 
             for (let row in rows) {
                 rows[row].responses = JSON.parse(rows[row].responses);
+                rows[row].persistent = JSON.parse(rows[row].responses);
                 rows[row].pack = pack;
             }
             activities.push(...rows);
