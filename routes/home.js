@@ -1,5 +1,5 @@
 import {withLogto} from "@logto/express";
-import {config, isAuthenticated} from "../auth";
+import {config, isAuthenticated} from "../auth.js";
 
 export function routeHome (app) {
     app.get("/", (request, response) => {
