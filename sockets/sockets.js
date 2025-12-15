@@ -1,6 +1,6 @@
-const createDOMPurify = require('dompurify');
-const { JSDOM } = require('jsdom');
-const crypto = require('crypto');
+import createDOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
+import crypto from 'crypto';
 
 let activeRooms = {};
 
