@@ -9,8 +9,18 @@ export async function getAllActivities(db, uuid, packs) {
             const [rows] = await db.query("SELECT `heading`,`subheading`,`responses`,`skip`,`persistent`,`type` FROM activities WHERE pack = ?", [pack]);
 
             for (let row in rows) {
-                rows[row].responses = JSON.parse(rows[row].responses);
-                rows[row].persistent = JSON.parse(rows[row].persistent);
+                try {
+                    rows[row].responses = JSON.parse(rows[row].responses);
+                } catch (e) {
+                    console.error("VODKA > getAllActivities error - unable to parse responses:", e);
+                    return {code: 500, message: "Internal error", data: []};
+                }
+                try {
+                    rows[row].persistent = JSON.parse(rows[row].persistent);
+                } catch (e) {
+                    console.error("VODKA > getAllActivities error - unable to parse persistent:", e);
+                    return {code: 500, message: "Internal error", data: []};
+                }
                 rows[row].pack = pack;
             }
             activities.push(...rows);

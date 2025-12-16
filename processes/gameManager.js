@@ -29,30 +29,35 @@ export async function createNewGame(db, uuid, mode, packs) {
 }
 
 export async function fetchExistingGame(db, code, host) {
-    try {
-        const [rows] = await db.query(
-            "SELECT `mode`,`host`,`packs`,`state` FROM games WHERE code = ? AND host = ?",
-            [code, host]
-        );
+    const [rows] = await db.query(
+        "SELECT `mode`,`host`,`packs`,`state` FROM games WHERE code = ? AND host = ?",
+        [code, host]
+    );
 
-        if (rows.length === 0) {
-            return { code: 404, message: "Game not found", data: [] };
-        }
-
-        const game = rows[0];
-        if (game.mode === 1) {
-            game.packs = JSON.parse(game.packs);
-            game.players = JSON.parse(game.players);
-            game.activities = await getAllActivities(db, game.host, game.packs);
-        } else {
-            game.activities = [];
-        }
-
-        return game;
-    } catch (err) {
-        console.error("VODKA > fetchExistingGame error:", err);
-        return { code: 500, message: "Internal error", data: [] };
+    if (rows.length === 0) {
+        return {code: 404, message: "Game not found", data: []};
     }
+
+    const game = rows[0];
+    if (game.mode === 1) {
+        try {
+            game.packs = JSON.parse(game.packs);
+        } catch (err) {
+            console.error("VODKA > fetchExistingGame error - unable to parse packs:", err);
+            return {code: 500, message: "Internal error", data: []};
+        }
+        try {
+            game.players = JSON.parse(game.players);
+        } catch (err) {
+            console.error("VODKA > fetchExistingGame error - unable to parse players:", err);
+            return {code: 500, message: "Internal error", data: []};
+        }
+        game.activities = await getAllActivities(db, game.host, game.packs);
+    } else {
+        game.activities = [];
+    }
+
+    return game;
 }
 
 
