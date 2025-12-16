@@ -39,17 +39,12 @@ export async function fetchExistingGame(db, code, host) {
     }
 
     const game = rows[0];
+    console.log(game);
     if (game.mode === 1) {
         try {
             game.packs = JSON.parse(game.packs);
         } catch (err) {
             console.error("VODKA > fetchExistingGame error - unable to parse packs:", err);
-            return {code: 500, message: "Internal error", data: []};
-        }
-        try {
-            game.players = JSON.parse(game.players);
-        } catch (err) {
-            console.error("VODKA > fetchExistingGame error - unable to parse players:", err);
             return {code: 500, message: "Internal error", data: []};
         }
         game.activities = await getAllActivities(db, game.host, game.packs);
