@@ -28,6 +28,9 @@ app.use(
     session({
         secret: process.env.APP_SECRET,
         cookie: { maxAge: 14 * 24 * 60 * 60 * 1000 },
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
     })
 );
 app.use(handleAuthRoutes(config));
