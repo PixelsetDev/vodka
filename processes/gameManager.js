@@ -30,7 +30,7 @@ export async function createNewGame(db, uuid, mode, packs, maxactivities, player
 
 export async function fetchExistingGame(db, code, host) {
     const [rows] = await db.query(
-        "SELECT `mode`,`host`,`packs`,`state` FROM games WHERE code = ? AND host = ?",
+        "SELECT `mode`,`host`,`packs`,`state`,`maxactivities` FROM games WHERE code = ? AND host = ?",
         [code, host]
     );
 
@@ -55,7 +55,7 @@ export async function fetchExistingGame(db, code, host) {
             console.error("VODKA > fetchExistingGame error - unable to parse players:", err);
             return {code: 500, message: "Internal error", data: []};
         }
-        game.activities = await getAllActivities(db, game.host, game.packs);
+        game.activities = await getAllActivities(db, game.host, game.packs, game.maxactivities);
     } else {
         game.activities = [];
     }
