@@ -1,7 +1,7 @@
 import {userOwns} from "./packs.js";
 import {getAllActivities} from "./activityManager.js";
 
-export async function createNewGame(db, uuid, mode, packs, players) {
+export async function createNewGame(db, uuid, mode, packs, maxactivities, players) {
     if (!Array.isArray(packs)) {
         return -3;
     }
@@ -17,7 +17,7 @@ export async function createNewGame(db, uuid, mode, packs, players) {
         const [rows] = await db.query("SELECT * FROM games WHERE code = ?", [code]);
 
         if (rows.length === 0) {
-            await db.query("INSERT INTO games (id, code, host, state, mode, packs, players) VALUES (?,?,?,?,?,?,?)", [null, code, uuid, 0, mode, JSON.stringify(packs), JSON.stringify(players)]);
+            await db.query("INSERT INTO games (id, code, host, state, mode, packs, maxactivities, players) VALUES (?,?,?,?,?,?,?,?)", [null, code, uuid, 0, mode, JSON.stringify(packs), maxactivites, JSON.stringify(players)]);
             return code;
         } else {
             await createNewGame(db, uuid, mode, packs);
