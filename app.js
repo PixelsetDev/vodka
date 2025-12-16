@@ -27,7 +27,13 @@ app.use('/static', express.static(path.join(dir, 'static')));
 app.use(
     session({
         secret: process.env.APP_SECRET,
-        cookie: { maxAge: 14 * 24 * 60 * 60 * 1000 }
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 14 * 24 * 60 * 60 * 1000,
+            sameSite: 'none',
+            secure: true
+        }
     })
 );
 app.use(handleAuthRoutes(config));
