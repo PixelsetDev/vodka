@@ -6,7 +6,7 @@ export function routeGameGet(app, db) {
     app.get('/game', withLogto(config), async (request, response) => {
         response.setHeader('content-type', 'application/json');
 
-        if (request.query.code.trim() === "") {
+        if (request.query.code === undefined || request.query.code.trim() === "") {
             response.send({
                 code: 400,
                 message: "Bad Request",
