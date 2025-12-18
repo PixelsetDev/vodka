@@ -54,7 +54,7 @@ export function loadSockets (app, db, io) {
 
             for (const [gameCode, game] of games.entries()) {
                 if (game.hostId === socket.id) {
-                    socket.to(gameCode).emit('host:disconnected');
+                    io.to(gameCode).emit('host:disconnected');
                     setTimeout(() => {
                         if (games.has(gameCode) && games.get(gameCode).hostId === socket.id) {
                             games.delete(gameCode);
