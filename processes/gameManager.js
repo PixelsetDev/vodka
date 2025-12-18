@@ -30,7 +30,7 @@ export async function createNewGame(db, uuid, mode, packs, maxActivities, player
 
 export async function fetchExistingGame(db, code, host) {
     const [rows] = await db.query(
-        "SELECT `mode`,`host`,`packs`,`state`,`maxactivities` FROM games WHERE code = ? AND host = ?",
+        "SELECT `mode`,`host`,`packs`,`state`,`players`,`maxactivities` FROM games WHERE code = ? AND host = ?",
         [code, host]
     );
 
