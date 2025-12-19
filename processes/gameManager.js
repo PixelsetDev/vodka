@@ -49,6 +49,7 @@ export async function fetchExistingGame(db, code, host) {
     try {
         if (game.players != null) {
             game.players = JSON.parse(game.players);
+            game.players.host = 0;
         }
     } catch (err) {
         console.error("VODKA > fetchExistingGame error - unable to parse players:", err);
