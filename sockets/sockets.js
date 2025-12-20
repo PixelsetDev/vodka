@@ -25,7 +25,6 @@ export function loadSockets (app, db, io) {
                 return;
             }
 
-            // Check if player already claimed
             if (Array.from(game.clients.values()).includes(playerId)) {
                 socket.emit('error', 'Player already claimed');
                 return;
