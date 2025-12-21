@@ -9,14 +9,49 @@ export function loadSockets (app, db, io) {
     io.on('connection', (socket) => {
         console.log('Connected:', socket.id);
 
-        socket.on('host:join', ({ gameCode }) => {
+        // 1. IMPROVED HOST JOIN: Prevent Overwriting
+        socket.on('host:join', ({ gameCode, hostId }) => {
             const code = DOMPurify.sanitize(gameCode);
-            games.set(code, { hostId: socket.id, clients: new Map() });
+
+            // CHECK FOR CONFLICT: If game exists and isn't owned by this user
+            if (games.has(code) && games.get(code).hostUserId !== hostId) {
+                socket.emit('error', 'CODE_TAKEN');
+                return;
+            }
+
+            // If it's a reconnection from the same user, just update the socketId
+            if (games.has(code) && games.get(code).hostUserId === hostId) {
+                const game = games.get(code);
+                game.hostId = socket.id; // Update to the new socket connection
+                socket.join(code);
+                console.log('Host reconnected:', code);
+                return;
+            }
+
+            // Otherwise, create a new game
+            games.set(code, {
+                hostId: socket.id,
+                hostUserId: hostId, // Store persistent ID
+                clients: new Map(),
+                status: 'lobby'
+            });
+
             socket.join(code);
             console.log('Host joined:', code);
         });
 
-        // Modified client:join to handle name submission in the lobby
+        // 2. NEW START SIGNAL: Tells players to move to game screen
+        socket.on('host:start_game', ({ gameCode }) => {
+            const code = DOMPurify.sanitize(gameCode);
+            const game = games.get(code);
+
+            if (game && game.hostId === socket.id) {
+                game.status = 'playing';
+                // Notify everyone in the room that the game is starting
+                io.to(code).emit('game:started');
+            }
+        });
+
         socket.on('client:join', ({ gameCode, playerId, playerName }) => {
             const code = DOMPurify.sanitize(gameCode);
             const game = games.get(code);
@@ -26,28 +61,19 @@ export function loadSockets (app, db, io) {
                 return;
             }
 
-            // If a playerName is provided, forward it to the host to add to the list
             if (playerName) {
                 const name = DOMPurify.sanitize(playerName);
+                // Forward the player joining event to the host
                 io.to(game.hostId).emit('client:action', {
                     type: 'PLAYER_SUBMIT_NAME',
-                    name: name
+                    name: name,
+                    socketId: socket.id // Useful for targeted communication
                 });
-            }
-
-            if (playerId && Array.from(game.clients.values()).includes(playerId)) {
-                socket.emit('error', 'Player already claimed');
-                return;
             }
 
             game.clients.set(socket.id, playerId || socket.id);
             socket.join(code);
-            console.log('Client joined:', code, 'as player', playerId || playerName);
-        });
-
-        socket.on('state', ({ gameCode, state }) => {
-            const code = DOMPurify.sanitize(gameCode);
-            socket.to(code).emit('state', state);
+            console.log('Client joined:', code);
         });
 
         socket.on('action', ({ gameCode, ...action }) => {
