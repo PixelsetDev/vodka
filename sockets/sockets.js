@@ -16,7 +16,8 @@ export function loadSockets (app, db, io) {
             console.log('Host joined:', code);
         });
 
-        socket.on('client:join', ({ gameCode, playerId }) => {
+        // Modified client:join to handle name submission in the lobby
+        socket.on('client:join', ({ gameCode, playerId, playerName }) => {
             const code = DOMPurify.sanitize(gameCode);
             const game = games.get(code);
 
@@ -25,14 +26,23 @@ export function loadSockets (app, db, io) {
                 return;
             }
 
-            if (Array.from(game.clients.values()).includes(playerId)) {
+            // If a playerName is provided, forward it to the host to add to the list
+            if (playerName) {
+                const name = DOMPurify.sanitize(playerName);
+                io.to(game.hostId).emit('client:action', {
+                    type: 'PLAYER_SUBMIT_NAME',
+                    name: name
+                });
+            }
+
+            if (playerId && Array.from(game.clients.values()).includes(playerId)) {
                 socket.emit('error', 'Player already claimed');
                 return;
             }
 
-            game.clients.set(socket.id, playerId);
+            game.clients.set(socket.id, playerId || socket.id);
             socket.join(code);
-            console.log('Client joined:', code, 'as player', playerId);
+            console.log('Client joined:', code, 'as player', playerId || playerName);
         });
 
         socket.on('state', ({ gameCode, state }) => {
