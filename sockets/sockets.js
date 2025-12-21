@@ -1,15 +1,29 @@
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 
+// The in-memory store for active sessions
 const games = new Map();
 
-export function loadSockets (app, db, io) {
+// Enum-like Action types matching your frontend
+const Action = {
+    CLIENT_JOIN: 1,
+    CLIENT_LEAVE: 2,
+    CLIENT_PING: 3,
+    CHAT_MESSAGE: 10,
+    CHAT_DELETE: 11,
+    HOST_SYNC_BROADCAST: 20,
+    HOST_SYNC_REQUEST_REPLY: 21,
+    CLIENT_SYNC_REQUEST: 22,
+    CLIENT_ACTIVITY_REPLY: 23,
+};
+
+export function loadSockets(app, db, io) {
     const DOMPurify = createDOMPurify(new JSDOM('').window);
 
     io.on('connection', (socket) => {
-        console.log('Connected:', socket.id);
+        console.log(`[SOCKET] Connected: ${socket.id}`);
 
-        // 1. IMPROVED HOST JOIN: Prevent Overwriting
+        // HOST: Explicit Join (Handles Room Creation/Reconnection)
         socket.on('host:join', ({ gameCode, hostId }) => {
             const code = DOMPurify.sanitize(gameCode);
 
@@ -19,94 +33,97 @@ export function loadSockets (app, db, io) {
                 return;
             }
 
-            // If it's a reconnection from the same user, just update the socketId
+            // Handle Reconnection
             if (games.has(code) && games.get(code).hostUserId === hostId) {
                 const game = games.get(code);
-                game.hostId = socket.id; // Update to the new socket connection
+                game.hostId = socket.id;
                 socket.join(code);
-                console.log('Host reconnected:', code);
+                console.log(`[HOST] Reconnected to room: ${code}`);
                 return;
             }
 
-            // Otherwise, create a new game
+            // Create New Session
             games.set(code, {
                 hostId: socket.id,
-                hostUserId: hostId, // Store persistent ID
+                hostUserId: hostId,
                 clients: new Map(),
                 status: 'lobby'
             });
 
             socket.join(code);
-            console.log('Host joined:', code);
+            console.log(`[HOST] Created room: ${code}`);
         });
 
-        // 2. NEW START SIGNAL: Tells players to move to game screen
+        // HOST: Start Signal
         socket.on('host:start_game', ({ gameCode }) => {
             const code = DOMPurify.sanitize(gameCode);
             const game = games.get(code);
 
             if (game && game.hostId === socket.id) {
                 game.status = 'playing';
-                // Notify everyone in the room that the game is starting
                 io.to(code).emit('game:started');
+                console.log(`[GAME] Started: ${code}`);
             }
         });
 
-        socket.on('client:join', ({ gameCode, playerId, playerName }) => {
-            if (playerName && playerName.length > 20) {
-                socket.emit('error', 'Player name too long.');
-                return;
-            }
+        // UNIFIED ACTION HANDLER
+        socket.on('action', (payload) => {
+            const { type, gameCode, ...data } = payload;
+            if (!gameCode) return;
+
             const code = DOMPurify.sanitize(gameCode);
             const game = games.get(code);
+            if (!game) return socket.emit('error', 'Game not found');
 
-            if (!game) {
-                socket.emit('error', 'Game not found');
-                return;
-            }
+            // Recursive or shallow sanitation of action data
+            const sanitizedData = Object.keys(data).reduce((acc, key) => {
+                acc[key] = typeof data[key] === 'string'
+                    ? DOMPurify.sanitize(data[key])
+                    : data[key];
+                return acc;
+            }, {});
 
-            if (playerName) {
-                const name = DOMPurify.sanitize(playerName);
-                // Forward the player joining event to the host
-                io.to(game.hostId).emit('client:action', {
-                    type: 'PLAYER_SUBMIT_NAME',
-                    name: name,
-                    socketId: socket.id // Useful for targeted communication
-                });
-            }
+            switch (type) {
+                case Action.CLIENT_JOIN: // 1
+                    if (sanitizedData.playerName && sanitizedData.playerName.length > 20) {
+                        return socket.emit('error', 'Name too long');
+                    }
 
-            game.clients.set(socket.id, playerId || socket.id);
-            socket.join(code);
-            console.log('Client joined:', code);
-        });
+                    socket.join(code);
+                    game.clients.set(socket.id, sanitizedData.userId || socket.id);
 
-        socket.on('action', ({ gameCode, ...action }) => {
-            const code = DOMPurify.sanitize(gameCode);
-            const game = games.get(code);
-            if (game) {
-                const sanitizedAction = Object.keys(action).reduce((acc, key) => {
-                    acc[key] = typeof action[key] === 'string'
-                        ? DOMPurify.sanitize(action[key])
-                        : action[key];
-                    return acc;
-                }, {});
+                    // Notify Host to update UI list
+                    io.to(game.hostId).emit('client:action', {
+                        type: 'PLAYER_SUBMIT_NAME',
+                        name: sanitizedData.playerName,
+                        socketId: socket.id
+                    });
+                    console.log(`[JOIN] ${sanitizedData.playerName} joined ${code}`);
+                    break;
 
-                io.to(game.hostId).emit('client:action', sanitizedAction);
+                case Action.CLIENT_PING: // 3
+                    socket.emit('action', { type: Action.CLIENT_PING, time: Date.now() });
+                    break;
+
+                default:
+                    // Forward any other actions (Sync, Chat, etc.) to the host
+                    io.to(game.hostId).emit('client:action', { type, ...sanitizedData });
+                    break;
             }
         });
 
         socket.on('disconnect', () => {
-            console.log('Disconnected:', socket.id);
-
             for (const [gameCode, game] of games.entries()) {
                 if (game.hostId === socket.id) {
                     io.to(gameCode).emit('host:disconnected');
+                    // 5 min grace period for host refresh
                     setTimeout(() => {
-                        if (games.has(gameCode) && games.get(gameCode).hostId === socket.id) {
+                        const current = games.get(gameCode);
+                        if (current && current.hostId === socket.id) {
                             games.delete(gameCode);
-                            console.log('Cleaned up game:', gameCode);
+                            console.log(`[CLEANUP] Room ${gameCode} deleted`);
                         }
-                    }, 300000); // 5 min grace period
+                    }, 300000);
                 } else {
                     game.clients.delete(socket.id);
                 }
