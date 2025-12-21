@@ -53,6 +53,10 @@ export function loadSockets (app, db, io) {
         });
 
         socket.on('client:join', ({ gameCode, playerId, playerName }) => {
+            if (playerName && playerName.length > 20) {
+                socket.emit('error', 'Player name too long.');
+                return;
+            }
             const code = DOMPurify.sanitize(gameCode);
             const game = games.get(code);
 
@@ -80,7 +84,14 @@ export function loadSockets (app, db, io) {
             const code = DOMPurify.sanitize(gameCode);
             const game = games.get(code);
             if (game) {
-                io.to(game.hostId).emit('client:action', action);
+                const sanitizedAction = Object.keys(action).reduce((acc, key) => {
+                    acc[key] = typeof action[key] === 'string'
+                        ? DOMPurify.sanitize(action[key])
+                        : action[key];
+                    return acc;
+                }, {});
+
+                io.to(game.hostId).emit('client:action', sanitizedAction);
             }
         });
 
