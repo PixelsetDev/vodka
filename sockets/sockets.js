@@ -57,7 +57,6 @@ export function loadSockets(app, db, io) {
                             name: sanitizedData.playerName
                         });
 
-                        // 1. Tell the Host specifically to update their player list (Lobby logic)
                         io.to(game.hostId).emit('client:action', {
                             type: 'PLAYER_SUBMIT_NAME',
                             name: sanitizedData.playerName,
@@ -111,15 +110,7 @@ export function loadSockets(app, db, io) {
                                 status: game.status
                             }
                         });
-
-                        if (!isHost) {
-                            io.to(game.hostId).emit('action', {
-                                type: Action.CLIENT_JOIN,
-                                data: { gameCode: code, userId: sanitizedData.userId }
-                            });
-                        }
-
-                        console.log(`[SYNC] Handshake initiated for ${playerName}`);
+                        console.log(`[SYNC] Sent data to ${playerName} (isHost: ${isHost}) in ${code}`);
                     }
                     break;
 
