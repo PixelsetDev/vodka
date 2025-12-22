@@ -97,11 +97,10 @@ export function loadSockets(app, db, io) {
                                 playerName: playerName,
                                 mode: game.mode,
                                 config: game.config,
-                                status: game.status,
-                                hostUserId: game.hostUserId
+                                status: game.status
                             }
                         });
-                        console.log(`[SYNC] Sent data to ${playerName} in ${code}`);
+                        console.log(`[SYNC] Sent data to ${playerName} (isHost: ${isHost}) in ${code}`);
                     }
                     break;
 
