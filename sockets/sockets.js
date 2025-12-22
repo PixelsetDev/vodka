@@ -26,9 +26,7 @@ export function loadSockets(app, db, io) {
             if (!payload.data || !payload.data.gameCode) return;
 
             const code = DOMPurify.sanitize(payload.data.gameCode).toUpperCase();
-
             const sanitizedData = JSON.parse(DOMPurify.sanitize(JSON.stringify(payload.data)));
-
             let game = games.get(code);
 
             switch (payload.action) {
@@ -113,6 +111,7 @@ export function loadSockets(app, db, io) {
 
                         io.to(game.hostId).emit('action', {
                             type: Action.CLIENT_SYNC_REQUEST,
+                            recipients: game.hostId,
                             data: sanitizedData
                         });
 
@@ -138,6 +137,7 @@ export function loadSockets(app, db, io) {
                             data: sanitizedData
                         });
                     }
+                    console.log(`[BROADCAST] Sent host sync request reply to ${payload.recipients.toString()} for ${code}`);
                     break;
 
                 default:
