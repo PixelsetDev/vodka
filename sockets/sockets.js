@@ -37,7 +37,7 @@ export function loadSockets(app, db, io) {
                         games.set(code, {
                             hostId: socket.id,
                             hostUserId: sanitizedData.userId,
-                            hostName: sanitizedData.playerName,
+                            hostName: sanitizedData.playerName || "Host",
                             clients: new Map(),
                             status: 'lobby',
                             mode: sanitizedData.mode || 2,
@@ -46,13 +46,11 @@ export function loadSockets(app, db, io) {
                         socket.join(code);
                         console.log(`[HOST] ${sanitizedData.playerName} Created: ${code}`);
                     } else if (game.hostUserId === sanitizedData.userId) {
-                        // Update host connection and refresh name if changed
                         game.hostId = socket.id;
-                        game.hostName = sanitizedData.playerName;
+                        if (sanitizedData.playerName) game.hostName = sanitizedData.playerName;
                         socket.join(code);
-                        console.log(`[HOST] ${sanitizedData.playerName} Reconnected: ${code}`);
+                        console.log(`[HOST] Reconnected: ${code}`);
                     } else {
-                        // Regular Player joining
                         socket.join(code);
                         game.clients.set(socket.id, {
                             userId: sanitizedData.userId,
@@ -70,9 +68,10 @@ export function loadSockets(app, db, io) {
                     break;
 
                 case Action.HOST_START_GAME:
-                    if (game && game.hostId === socket.id) {
+                    // Authenticate that the person starting the game is the host
+                    if (game && (game.hostId === socket.id || game.hostUserId === sanitizedData.userId)) {
                         game.status = 'playing';
-                        game.config = sanitizedData.config; // Save config for later syncs
+                        game.config = sanitizedData.config;
                         io.to(code).emit('action', {
                             type: Action.HOST_START_GAME,
                             gameId: code
@@ -98,7 +97,8 @@ export function loadSockets(app, db, io) {
                                 playerName: playerName,
                                 mode: game.mode,
                                 config: game.config,
-                                status: game.status
+                                status: game.status,
+                                hostUserId: game.hostUserId
                             }
                         });
                         console.log(`[SYNC] Sent data to ${playerName} in ${code}`);
