@@ -67,6 +67,7 @@ export function loadSockets(app, db, io) {
                         io.to(code).emit('action', {
                             type: Action.CLIENT_JOIN,
                             data: {
+                                gameCode: code,
                                 userId: sanitizedData.userId,
                                 playerName: sanitizedData.playerName
                             }
