@@ -110,7 +110,33 @@ export function loadSockets(app, db, io) {
                                 status: game.status
                             }
                         });
-                        console.log(`[SYNC] Sent data to ${playerName} (isHost: ${isHost}) in ${code}`);
+
+                        io.to(game.hostId).emit('action', {
+                            type: Action.CLIENT_SYNC_REQUEST,
+                            data: sanitizedData
+                        });
+
+                        console.log(`[SYNC] Handshake: Info sent to Client, Request forwarded to Host in ${code}`);
+                    }
+                    break;
+
+                case Action.HOST_SYNC_BROADCAST:
+                    if (game && (socket.id === game.hostId || sanitizedData.userId === game.hostUserId)) {
+                        socket.to(code).emit('action', {
+                            type: Action.HOST_SYNC_BROADCAST,
+                            data: sanitizedData
+                        });
+                        console.log(`[BROADCAST] State synced to all clients in ${code}`);
+                    }
+                    break;
+
+                case Action.HOST_SYNC_REQUEST_REPLY:
+                    if (game && (socket.id === game.hostId || sanitizedData.userId === game.hostUserId)) {
+                        io.to(code).emit('action', {
+                            type: Action.HOST_SYNC_REQUEST_REPLY,
+                            recipients: payload.recipients,
+                            data: sanitizedData
+                        });
                     }
                     break;
 
