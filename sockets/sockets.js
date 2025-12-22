@@ -37,41 +37,71 @@ export function loadSockets(app, db, io) {
                         games.set(code, {
                             hostId: socket.id,
                             hostUserId: sanitizedData.userId,
+                            hostName: sanitizedData.playerName,
                             clients: new Map(),
-                            status: 'lobby'
+                            status: 'lobby',
+                            mode: sanitizedData.mode || 2,
+                            config: null
                         });
                         socket.join(code);
-                        console.log(`[HOST] Room Created: ${code}`);
+                        console.log(`[HOST] ${sanitizedData.playerName} Created: ${code}`);
                     } else if (game.hostUserId === sanitizedData.userId) {
+                        // Update host connection and refresh name if changed
                         game.hostId = socket.id;
+                        game.hostName = sanitizedData.playerName;
                         socket.join(code);
-                        console.log(`[HOST] Reconnected: ${code}`);
+                        console.log(`[HOST] ${sanitizedData.playerName} Reconnected: ${code}`);
                     } else {
-                        if (sanitizedData.playerName && sanitizedData.playerName.length > 20) {
-                            return socket.emit('error', 'Name too long');
-                        }
+                        // Regular Player joining
                         socket.join(code);
-                        game.clients.set(socket.id, sanitizedData.userId || socket.id);
+                        game.clients.set(socket.id, {
+                            userId: sanitizedData.userId,
+                            name: sanitizedData.playerName
+                        });
 
                         io.to(game.hostId).emit('client:action', {
                             type: 'PLAYER_SUBMIT_NAME',
                             name: sanitizedData.playerName,
+                            userId: sanitizedData.userId,
                             socketId: socket.id
                         });
-                        console.log(`[JOIN] Player ${sanitizedData.playerName} in ${code}`);
+                        console.log(`[JOIN] ${sanitizedData.playerName} joined ${code}`);
                     }
                     break;
 
                 case Action.HOST_START_GAME:
                     if (game && game.hostId === socket.id) {
                         game.status = 'playing';
-                        // Broadcast clean config to the room
+                        game.config = sanitizedData.config; // Save config for later syncs
                         io.to(code).emit('action', {
                             type: Action.HOST_START_GAME,
-                            gameId: code,
-                            config: sanitizedData.config
+                            gameId: code
                         });
                         console.log(`[GAME] Started: ${code}`);
+                    }
+                    break;
+
+                case Action.CLIENT_SYNC_REQUEST:
+                    if (game) {
+                        const isHost = sanitizedData.userId === game.hostUserId;
+                        let playerName = isHost ? game.hostName : "Guest";
+
+                        if (!isHost) {
+                            const client = Array.from(game.clients.values()).find(c => c.userId === sanitizedData.userId);
+                            if (client) playerName = client.name;
+                        }
+
+                        socket.emit('action', {
+                            type: Action.HOST_SYNC_REQUEST_REPLY,
+                            data: {
+                                isHost: isHost,
+                                playerName: playerName,
+                                mode: game.mode,
+                                config: game.config,
+                                status: game.status
+                            }
+                        });
+                        console.log(`[SYNC] Sent data to ${playerName} in ${code}`);
                     }
                     break;
 
