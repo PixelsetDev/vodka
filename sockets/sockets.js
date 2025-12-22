@@ -63,6 +63,15 @@ export function loadSockets(app, db, io) {
                             userId: sanitizedData.userId,
                             socketId: socket.id
                         });
+
+                        io.to(code).emit('action', {
+                            type: Action.CLIENT_JOIN,
+                            data: {
+                                userId: sanitizedData.userId,
+                                playerName: sanitizedData.playerName
+                            }
+                        });
+
                         console.log(`[JOIN] ${sanitizedData.playerName} joined ${code}`);
                     }
                     break;
