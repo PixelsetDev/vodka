@@ -111,4 +111,53 @@ export function routePacks(app, db) {
         response.setHeader('content-type', 'text/html');
         response.send("<b>Error</b>")
     });
+
+    app.post('/packs/content', withLogto(config), async (request, response) => {
+        response.setHeader('content-type', 'application/json');
+
+        if (isAuthenticated(request.user)) {
+            try {
+                const { packIds } = request.body;
+
+                if (!packIds || !Array.isArray(packIds) || packIds.length === 0) {
+                    return response.send({
+                        code: 400,
+                        message: 'No pack IDs provided',
+                        data: []
+                    });
+                }
+
+                const [activities] = await db.query(
+                    'SELECT id, pack, heading, subheading, responses, skip, persistent, type FROM activities WHERE pack IN (?)',
+                    [packIds]
+                );
+
+                const formattedActivities = activities.map(activity => ({
+                    ...activity,
+                    heading: activity.heading || "",
+                    responses: typeof activity.responses === 'string' ? JSON.parse(activity.responses) : activity.responses
+                }));
+
+                response.send({
+                    code: 200,
+                    message: 'OK',
+                    data: formattedActivities,
+                });
+
+            } catch (err) {
+                console.error("Content Fetch Error:", err);
+                response.send({
+                    code: 500,
+                    message: err.message,
+                    data: null,
+                });
+            }
+        } else {
+            response.send({
+                code: 401,
+                message: 'Unauthorized',
+                data: null
+            });
+        }
+    });
 }
