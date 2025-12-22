@@ -32,9 +32,11 @@ export function loadSockets(app, db, io) {
             switch (payload.action) {
                 case Action.CLIENT_JOIN:
                     if (!game) {
+                        const hostIdToSet = sanitizedData.userId || "MISSING_ID_" + Math.random();
+
                         games.set(code, {
                             hostId: socket.id,
-                            hostUserId: sanitizedData.userId,
+                            hostUserId: hostIdToSet,
                             hostName: sanitizedData.playerName || "Host",
                             clients: new Map(),
                             status: 'lobby',
@@ -42,22 +44,23 @@ export function loadSockets(app, db, io) {
                             config: null
                         });
                         socket.join(code);
-                        console.log(`[HOST] ${sanitizedData.playerName} Created: ${code}`);
-                    } else if (game.hostUserId === sanitizedData.userId) {
+                        console.log(`[HOST] ${sanitizedData.playerName} Created Room: ${code} with ID: ${hostIdToSet}`);
+                    } else if (sanitizedData.userId && game.hostUserId === sanitizedData.userId) {
                         game.hostId = socket.id;
                         if (sanitizedData.playerName) game.hostName = sanitizedData.playerName;
                         socket.join(code);
-                        console.log(`[HOST] Reconnected: ${code}`);
+                        console.log(`[HOST] Reconnected: ${code} (ID: ${sanitizedData.userId})`);
+
                     } else {
                         socket.join(code);
                         game.clients.set(socket.id, {
                             userId: sanitizedData.userId,
-                            name: sanitizedData.playerName
+                            name: sanitizedData.playerName || "Guest"
                         });
 
                         io.to(game.hostId).emit('client:action', {
                             type: 'PLAYER_SUBMIT_NAME',
-                            name: sanitizedData.playerName,
+                            name: sanitizedData.playerName || "Guest",
                             userId: sanitizedData.userId,
                             socketId: socket.id
                         });
@@ -67,11 +70,11 @@ export function loadSockets(app, db, io) {
                             data: {
                                 gameCode: code,
                                 userId: sanitizedData.userId,
-                                playerName: sanitizedData.playerName
+                                playerName: sanitizedData.playerName || "Guest"
                             }
                         });
 
-                        console.log(`[JOIN] ${sanitizedData.playerName} joined ${code}`);
+                        console.log(`[JOIN] Guest ${sanitizedData.playerName} (ID: ${sanitizedData.userId}) joined ${code}`);
                     }
                     break;
 
