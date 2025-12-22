@@ -23,20 +23,15 @@ export function loadSockets(app, db, io) {
         console.log(`[SOCKET] Connected: ${socket.id}`);
 
         socket.on('action', (payload) => {
-            const { type, gameCode, ...data } = payload;
-            if (!gameCode) return;
+            if (!payload.data || !payload.data.gameCode) return;
 
-            const code = DOMPurify.sanitize(gameCode).toUpperCase();
-            const sanitizedData = Object.keys(data).reduce((acc, key) => {
-                acc[key] = typeof data[key] === 'string'
-                    ? DOMPurify.sanitize(data[key])
-                    : data[key];
-                return acc;
-            }, {});
+            const code = DOMPurify.sanitize(payload.data.gameCode).toUpperCase();
+
+            const sanitizedData = JSON.parse(DOMPurify.sanitize(JSON.stringify(payload.data)));
 
             let game = games.get(code);
 
-            switch (type) {
+            switch (payload.action) {
                 case Action.CLIENT_JOIN:
                     if (!game) {
                         games.set(code, {
@@ -57,6 +52,7 @@ export function loadSockets(app, db, io) {
                         }
                         socket.join(code);
                         game.clients.set(socket.id, sanitizedData.userId || socket.id);
+
                         io.to(game.hostId).emit('client:action', {
                             type: 'PLAYER_SUBMIT_NAME',
                             name: sanitizedData.playerName,
@@ -69,21 +65,22 @@ export function loadSockets(app, db, io) {
                 case Action.HOST_START_GAME:
                     if (game && game.hostId === socket.id) {
                         game.status = 'playing';
+                        // Broadcast clean config to the room
                         io.to(code).emit('action', {
                             type: Action.HOST_START_GAME,
-                            gameId: sanitizedData.gameId
+                            gameId: code,
+                            config: sanitizedData.config
                         });
-                        console.log(`[GAME] Global Start Signal: ${code}`);
+                        console.log(`[GAME] Started: ${code}`);
                     }
-                    break;
-
-                case Action.CLIENT_PING:
-                    socket.emit('action', { type: Action.CLIENT_PING, time: Date.now() });
                     break;
 
                 default:
                     if (game) {
-                        io.to(game.hostId).emit('client:action', { type, ...sanitizedData });
+                        io.to(game.hostId).emit('client:action', {
+                            type: payload.action,
+                            ...sanitizedData
+                        });
                     }
                     break;
             }
@@ -97,7 +94,6 @@ export function loadSockets(app, db, io) {
                         const current = games.get(gameCode);
                         if (current && current.hostId === socket.id) {
                             games.delete(gameCode);
-                            console.log(`[CLEANUP] Room ${gameCode} deleted`);
                         }
                     }, 300000);
                 } else {
