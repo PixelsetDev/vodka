@@ -85,6 +85,7 @@ export function loadSockets(app, db, io) {
                         game.config = sanitizedData.config;
                         io.to(code).emit('action', {
                             type: Action.HOST_START_GAME,
+                            recipients: null,
                             gameId: code
                         });
                         console.log(`[GAME] Started: ${code}`);
@@ -126,6 +127,7 @@ export function loadSockets(app, db, io) {
                     if (game && (socket.id === game.hostId || sanitizedData.userId === game.hostUserId)) {
                         socket.to(code).emit('action', {
                             type: Action.HOST_SYNC_BROADCAST,
+                            recipients: null,
                             data: sanitizedData
                         });
                         console.log(`[BROADCAST] State synced to all clients in ${code}`);
@@ -147,6 +149,7 @@ export function loadSockets(app, db, io) {
                     if (game) {
                         io.to(game.hostId).emit('client:action', {
                             type: payload.action,
+                            recipients: game.hostId,
                             ...sanitizedData
                         });
                     }
