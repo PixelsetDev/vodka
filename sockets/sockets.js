@@ -148,6 +148,17 @@ export function loadSockets(app, db, io) {
                     console.log(`[BROADCAST] Sent host sync request reply to ${payload.recipients.toString()} for ${code}`);
                     break;
 
+                case Action.CLIENT_ACTIVITY_REPLY:
+                    if (game) {
+                        io.to(code).emit('action', {
+                            type: Action.HOST_SYNC_REQUEST_REPLY,
+                            recipients: payload.recipients,
+                            data: sanitizedData
+                        });
+                    }
+                    console.log(`[BROADCAST] Sent client activity reply to ${payload.recipients.toString()} for ${code}`);
+                    break;
+
                 default:
                     if (game) {
                         io.to(game.hostId).emit('client:action', {
