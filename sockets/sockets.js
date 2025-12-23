@@ -150,7 +150,7 @@ export function loadSockets(app, db, io) {
                 case Action.CLIENT_ACTIVITY_REPLY:
                     if (game) {
                         io.to(code).emit('action', {
-                            type: Action.HOST_SYNC_REQUEST_REPLY,
+                            type: Action.CLIENT_ACTIVITY_REPLY,
                             recipients: payload.recipients,
                             data: sanitizedData
                         });
