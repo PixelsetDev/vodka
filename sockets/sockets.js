@@ -97,10 +97,12 @@ export function loadSockets(app, db, io) {
                         const isHost = sanitizedData.userId === game.hostUserId;
                         let playerName = isHost ? game.hostName : "Guest";
 
-                        if (!isHost) {
-                            const client = Array.from(game.clients.values()).find(c => c.userId === sanitizedData.userId);
-                            if (client) playerName = client.name;
-                        }
+                        const connectedPlayers = Array.from(game.clients.values()).map(c => ({
+                            name: c.name,
+                            userId: c.userId
+                        }));
+
+                        connectedPlayers.unshift({ name: game.hostName, userId: game.hostUserId });
 
                         socket.emit('action', {
                             type: Action.HOST_SYNC_REQUEST_REPLY,
@@ -109,7 +111,8 @@ export function loadSockets(app, db, io) {
                                 playerName: playerName,
                                 mode: game.mode,
                                 config: game.config,
-                                status: game.status
+                                status: game.status,
+                                serverPlayerList: connectedPlayers
                             }
                         });
 
