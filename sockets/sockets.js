@@ -6,7 +6,6 @@ const games = new Map();
 const Action = {
     CLIENT_JOIN: 1,
     CLIENT_LEAVE: 2,
-    CLIENT_PING: 3,
     CHAT_MESSAGE: 10,
     CHAT_DELETE: 11,
     HOST_START_GAME: 20,
