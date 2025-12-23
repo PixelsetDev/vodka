@@ -22,7 +22,11 @@ export function loadSockets(app, db, io) {
         console.log(`[SOCKET] Connected: ${socket.id}`);
 
         socket.on('action', (payload) => {
-            if (!payload.data || !payload.data.gameCode) return;
+            if (!payload.data || !payload.data.gameCode) {
+                console.log("Rejected action due to missing data or missing gameCode.")
+                console.log(payload)
+                return
+            }
 
             const code = DOMPurify.sanitize(payload.data.gameCode).toUpperCase();
             const sanitizedData = JSON.parse(DOMPurify.sanitize(JSON.stringify(payload.data)));
@@ -159,8 +163,14 @@ export function loadSockets(app, db, io) {
                     break;
 
                 default:
+                    console.log("Received unrecognised communication:");
+                    console.log({
+                        type: payload.action,
+                        recipients: game.hostId,
+                        ...sanitizedData
+                    });
                     if (game) {
-                        io.to(game.hostId).emit('client:action', {
+                        io.to(game.hostId).emit('action', {
                             type: payload.action,
                             recipients: game.hostId,
                             ...sanitizedData
