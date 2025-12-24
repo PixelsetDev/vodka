@@ -10,12 +10,16 @@ export const config = {
 
 export function isAuthenticated(user) {
     if (user.isAuthenticated) {
-        let roles = user.claims.roles;
+        if (process.env.APP_DEBUG === "true") {
+            let roles = user.claims.roles;
 
-        if (roles instanceof Array) {
-            if (roles.includes("D3:ACCESS_PREPROD")) {
-                return true;
+            if (roles instanceof Array) {
+                if (roles.includes("D3:ACCESS_PREPROD")) {
+                    return true;
+                }
             }
+        } else {
+            return true;
         }
     }
 
